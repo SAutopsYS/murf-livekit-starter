@@ -1,10 +1,10 @@
-# VoiceForBharat - Day 1 Starter Voice Agent
+# VoiceForBharat - AI Voice Learning Tutor
 
 Real-time AI voice agent built for the **Murf AI 10 Days of Voice Agents - VoiceForBharat Edition**.
 
 **Built by:** Saloni Saini  
 **Track:** Learning & Literacy  
-**Day:** 1 - Starter Voice Agent
+**Day:** 2 - AI Voice Learning Tutor (Day 1 complete)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Murf Falcon](https://img.shields.io/badge/TTS-Murf%20Falcon-6366F1)](https://murf.ai/api/docs/text-to-speech/streaming)
@@ -16,11 +16,19 @@ Real-time AI voice agent built for the **Murf AI 10 Days of Voice Agents - Voice
 
 ## Challenge submission
 
-This repository is my **Day 1** submission for the Murf AI challenge:
+This repository is my submission for the Murf AI challenge:
 
-> **10 Days of Voice Agents - VoiceForBharat Edition**
+> **10 Days of Voice Agents - VoiceForBharat Edition**  
+> **Track:** Learning & Literacy  
+> **Built by:** Saloni Saini
 
-Day 1 goal: set up the development environment and run a working starter voice agent end-to-end using **Murf Falcon** for text-to-speech.
+### Day 1 (completed)
+
+Set up the development environment and run a working starter voice agent end-to-end using **Murf Falcon** for text-to-speech.
+
+### Day 2 (completed)
+
+Transformed the starter into an **AI Voice Learning Tutor** with a structured personality, bilingual conversation support, safety guardrails, a spoken greeting, and a premium Learning & Literacy UI.
 
 ---
 
@@ -36,7 +44,7 @@ User speaks → Deepgram STT → Google Gemini → Murf Falcon TTS → LiveKit �
 
 LiveKit carries the audio session. The Python backend runs the agent worker. The Next.js frontend provides the talk UI.
 
-Day 1 delivers a working conversational baseline under the **Learning & Literacy** track, ready for deeper features in later challenge days.
+Day 1 delivered a working conversational baseline. Day 2 specializes that baseline into a Learning & Literacy tutor that can practice spoken English in Hindi, English, or Hinglish.
 
 ---
 
@@ -58,6 +66,8 @@ Also used: Silero VAD, LiveKit turn detection, `uv` (Python), `pnpm` (Node).
 
 ## Features
 
+### Day 1 baseline
+
 - Real-time voice conversation in the browser
 - Murf Falcon TTS with Indian English voice (`Anisha`, `en-IN`)
 - Deepgram Nova-3 speech recognition
@@ -65,6 +75,15 @@ Also used: Silero VAD, LiveKit turn detection, `uv` (Python), `pnpm` (Node).
 - LiveKit Cloud agent dispatch (`my-agent`)
 - Next.js UI with microphone controls and chat input
 - Local development via backend + frontend (or `start_app.ps1` / `start_app.sh`)
+
+### Day 2 additions
+
+- **AI Voice Learning Tutor** personality for the Learning & Literacy track
+- Spoken first-turn **greeting** when a session starts
+- **Code-mixed language support** (English, Hindi, and natural Hinglish)
+- **Guardrails** that refuse cheating, diagnoses, and out-of-scope advice
+- Structured learning **personality** (identity, objectives, knowledge, style)
+- **Premium UI** welcome experience with glass cards, badges, and tutor branding
 
 ---
 
