@@ -1,10 +1,10 @@
-# VoiceForBharat — Day 1 Starter Voice Agent
+# VoiceForBharat - Day 1 Starter Voice Agent
 
-Real-time AI voice agent built for the **Murf AI 10 Days of Voice Agents – VoiceForBharat Edition**.
+Real-time AI voice agent built for the **Murf AI 10 Days of Voice Agents - VoiceForBharat Edition**.
 
 **Built by:** Saloni Saini  
 **Track:** Learning & Literacy  
-**Day:** 1 — Starter Voice Agent
+**Day:** 1 - Starter Voice Agent
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Murf Falcon](https://img.shields.io/badge/TTS-Murf%20Falcon-6366F1)](https://murf.ai/api/docs/text-to-speech/streaming)
@@ -18,7 +18,7 @@ Real-time AI voice agent built for the **Murf AI 10 Days of Voice Agents – Voi
 
 This repository is my **Day 1** submission for the Murf AI challenge:
 
-> **10 Days of Voice Agents – VoiceForBharat Edition**
+> **10 Days of Voice Agents - VoiceForBharat Edition**
 
 Day 1 goal: set up the development environment and run a working starter voice agent end-to-end using **Murf Falcon** for text-to-speech.
 
@@ -163,7 +163,7 @@ pnpm install
 
 Use **two terminals** (recommended):
 
-**Terminal 1 — Backend**
+**Terminal 1 - Backend**
 
 ```bash
 cd backend
@@ -172,7 +172,7 @@ uv run python src/agent.py dev
 
 Wait until the logs show the worker registered (for example `registered worker` with `agent_name: my-agent`).
 
-**Terminal 2 — Frontend**
+**Terminal 2 - Frontend**
 
 ```bash
 cd frontend
@@ -228,7 +228,7 @@ See the original starter license terms: [MIT](https://opensource.org/licenses/MI
 
 ## Acknowledgements
 
-- [Murf AI](https://murf.ai/) — Murf Falcon TTS & VoiceForBharat challenge
-- [LiveKit](https://livekit.io/) — Agents SDK & real-time transport
-- [Deepgram](https://deepgram.com/) — Speech-to-text
-- [Google Gemini](https://ai.google.dev/) — LLM
+- [Murf AI](https://murf.ai/) - Murf Falcon TTS & VoiceForBharat challenge
+- [LiveKit](https://livekit.io/) - Agents SDK & real-time transport
+- [Deepgram](https://deepgram.com/) - Speech-to-text
+- [Google Gemini](https://ai.google.dev/) - LLM

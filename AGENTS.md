@@ -7,7 +7,7 @@ This is a monorepo for a voice AI agent starter, powered by Murf Falcon TTS and 
 ```
 murf-livekit-starter/
 ├── backend/          # Python voice agent (LiveKit Agents + Murf Falcon TTS)
-│   ├── src/agent.py  # Agent entrypoint — all pipeline config lives here
+│   ├── src/agent.py  # Agent entrypoint - all pipeline config lives here
 │   └── tests/        # LLM-judged eval tests
 ├── frontend/         # Next.js UI (LiveKit Agents UI components)
 │   ├── app/          # Pages and API routes
@@ -21,18 +21,18 @@ murf-livekit-starter/
 
 ### Tech stack
 - **Python 3.10+** with **uv** package manager
-- **LiveKit Agents SDK** (`livekit-agents ~1.4`) — voice AI agent framework
-- **Murf Falcon** (`livekit-murf`) — text-to-speech
-- **Deepgram Nova-3** — speech-to-text
-- **Google Gemini** — LLM
-- **Silero VAD** + **LiveKit Turn Detector** — voice activity and turn detection
+- **LiveKit Agents SDK** (`livekit-agents ~1.4`) - voice AI agent framework
+- **Murf Falcon** (`livekit-murf`) - text-to-speech
+- **Deepgram Nova-3** - speech-to-text
+- **Google Gemini** - LLM
+- **Silero VAD** + **LiveKit Turn Detector** - voice activity and turn detection
 
 ### Key file: `backend/src/agent.py`
 This is the single entrypoint. It contains:
-- `SYSTEM_PROMPT` — controls the agent's behavior (change this to change the use case)
-- `Assistant` class — extends `Agent`, where tools are added via `@function_tool`
-- `my_agent()` — sets up the voice pipeline (STT → LLM → TTS) and connects to LiveKit
-- `prewarm()` — pre-loads the Silero VAD model
+- `SYSTEM_PROMPT` - controls the agent's behavior (change this to change the use case)
+- `Assistant` class - extends `Agent`, where tools are added via `@function_tool`
+- `my_agent()` - sets up the voice pipeline (STT → LLM → TTS) and connects to LiveKit
+- `prewarm()` - pre-loads the Silero VAD model
 
 ### Running the backend
 ```bash
@@ -56,7 +56,7 @@ Uses **ruff** for linting and formatting:
 uv run ruff check .
 uv run ruff format .
 ```
-Config is in `pyproject.toml` — 88 char line length, double quotes, space indent.
+Config is in `pyproject.toml` - 88 char line length, double quotes, space indent.
 
 ### Testing
 Tests are in `backend/tests/test_agent.py`. They use LiveKit's testing framework with LLM-as-judge evaluation (not mocks). Run with:
@@ -65,10 +65,10 @@ uv run pytest
 ```
 Requires `LIVEKIT_URL`, `LIVEKIT_API_KEY`, and `LIVEKIT_API_SECRET` to be set.
 
-When modifying the system prompt or adding tools, write tests first. Use the existing tests as a pattern — they call `session.run(user_input=...)` and use `.judge()` to evaluate responses.
+When modifying the system prompt or adding tools, write tests first. Use the existing tests as a pattern - they call `session.run(user_input=...)` and use `.judge()` to evaluate responses.
 
 ### Dependencies
-Managed via `uv` and defined in `pyproject.toml`. Always use `uv sync` and `uv run` — never `pip install`.
+Managed via `uv` and defined in `pyproject.toml`. Always use `uv sync` and `uv run` - never `pip install`.
 
 ## Frontend
 
@@ -79,11 +79,11 @@ Managed via `uv` and defined in `pyproject.toml`. Always use `uv sync` and `uv r
 - **Tailwind CSS**
 
 ### Key files
-- `frontend/app-config.ts` — branding, feature flags, accent colors, visualizer config
-- `frontend/app/page.tsx` — main page
-- `frontend/app/api/token/route.ts` — LiveKit token endpoint
-- `frontend/components/app/` — app-level logic (welcome view, view controller, theme)
-- `frontend/components/agents-ui/` — voice UI components (visualizers, controls, chat)
+- `frontend/app-config.ts` - branding, feature flags, accent colors, visualizer config
+- `frontend/app/page.tsx` - main page
+- `frontend/app/api/token/route.ts` - LiveKit token endpoint
+- `frontend/components/app/` - app-level logic (welcome view, view controller, theme)
+- `frontend/components/agents-ui/` - voice UI components (visualizers, controls, chat)
 
 ### Running the frontend
 ```bash
@@ -95,7 +95,7 @@ pnpm dev
 ### Environment variables
 Copy `frontend/.env.example` to `frontend/.env.local`. Required:
 - `LIVEKIT_URL`, `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET`
-- `AGENT_NAME` (optional — set to `my-agent` for explicit dispatch)
+- `AGENT_NAME` (optional - set to `my-agent` for explicit dispatch)
 
 ### Linting
 ```bash
@@ -118,7 +118,7 @@ Add a method to the `Assistant` class in `backend/src/agent.py` with the `@funct
 Replace the `llm=google.LLM(...)` call in `agent.py`. For OpenAI: install `livekit-agents[openai]`, set `OPENAI_API_KEY`, import `openai` from `livekit.plugins`, and use `openai.LLM(...)`.
 
 ### Change frontend branding
-Edit `frontend/app-config.ts` — company name, page title, logo paths, accent colors, button text, visualizer type.
+Edit `frontend/app-config.ts` - company name, page title, logo paths, accent colors, button text, visualizer type.
 
 ## Documentation references
 
