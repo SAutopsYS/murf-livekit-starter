@@ -13,7 +13,7 @@ A multilingual AI Voice Learning Tutor built with LiveKit, Murf Falcon, Deepgram
 
 **Built by:** Saloni Saini  
 **Track:** Learning & Literacy  
-**Day:** 3 — Premium Learning Tutor Experience (Day 1 and Day 2 complete)  
+**Day 3:** Premium Learning Tutor Experience (Day 1 and Day 2 complete)  
 **Powered by:** Murf Falcon
 
 ---
@@ -22,7 +22,7 @@ A multilingual AI Voice Learning Tutor built with LiveKit, Murf Falcon, Deepgram
 
 This repository is a submission for the Murf AI challenge:
 
-> **10 Days of Voice Agents — VoiceForBharat Edition**  
+> **10 Days of Voice Agents: VoiceForBharat Edition**  
 > **Track:** Learning & Literacy  
 > **Built by:** Saloni Saini
 
@@ -44,7 +44,7 @@ Built a polished **VoiceForBharat** Learning & Literacy frontend experience: ses
 
 **AI Voice Learning Tutor** is a full-stack, real-time voice AI product. Learners speak into the browser; the agent listens, understands, and replies with natural speech. The experience is voice-first: practice starts with a spoken greeting, continues through live conversation, and stays readable with a live transcript and clear session states.
 
-It is built for students and learners across India who want to improve spoken English and everyday communication. The Learning & Literacy focus means the agent acts as a supportive tutor—not a general chatbot—helping with grammar, vocabulary, speaking confidence, and guided practice in a safe, on-topic way.
+It is built for students and learners across India who want to improve spoken English and everyday communication. The Learning & Literacy focus means the agent acts as a supportive tutor, not a general chatbot, helping with grammar, vocabulary, speaking confidence, and guided practice in a safe, on-topic way.
 
 The project was built for the **Murf AI VoiceForBharat Challenge 2026** to show how modern voice pipelines (LiveKit + Deepgram + Gemini + Murf Falcon) can deliver accessible learning. Learners can speak in **Hindi**, **English**, or natural **Hinglish**, and the tutor mirrors that mix so practice feels familiar and useful.
 
@@ -151,19 +151,19 @@ Add demo images here after recording.
 
 ### Ready Screen
 
-_Placeholder — Ready hero, practice suggestions, and Start Talking._
+_Placeholder: Ready hero, practice suggestions, and Start Talking._
 
 ### Conversation
 
-_Placeholder — Live session with wave visualizer and voice status._
+_Placeholder: Live session with wave visualizer and voice status._
 
 ### Transcript
 
-_Placeholder — Live transcript during practice._
+_Placeholder: Live transcript during practice._
 
 ### Session Ended
 
-_Placeholder — Session ended screen with Practice Again._
+_Placeholder: Session ended screen with Practice Again._
 
 ---
 
@@ -270,7 +270,7 @@ pnpm install
 
 Use **two terminals** (recommended).
 
-### Terminal 1 — Backend
+### Terminal 1: Backend
 
 ```bash
 cd backend
@@ -279,7 +279,7 @@ uv run python src/agent.py dev
 
 Wait until the logs show the worker registered (for example `registered worker` with `agent_name: my-agent`).
 
-### Terminal 2 — Frontend
+### Terminal 2: Frontend
 
 ```bash
 cd frontend
@@ -353,9 +353,9 @@ See the original starter license terms: [MIT](https://opensource.org/licenses/MI
 
 ## Acknowledgements
 
-- [Murf AI](https://murf.ai/) — Murf Falcon TTS and the VoiceForBharat Challenge
-- [LiveKit](https://livekit.io/) — Agents SDK and real-time transport
-- [Deepgram](https://deepgram.com/) — Speech-to-text
-- [Google Gemini](https://ai.google.dev/) — Large language model
-- **VoiceForBharat Challenge** — Murf AI 10 Days of Voice Agents (2026)
+- [Murf AI](https://murf.ai/): Murf Falcon TTS and the VoiceForBharat Challenge
+- [LiveKit](https://livekit.io/): Agents SDK and real-time transport
+- [Deepgram](https://deepgram.com/): Speech-to-text
+- [Google Gemini](https://ai.google.dev/): Large language model
+- **VoiceForBharat Challenge**: Murf AI 10 Days of Voice Agents (2026)
 - **Powered by Murf Falcon**

@@ -109,44 +109,27 @@ export interface AgentSessionView_01Props {
   className?: string;
 }
 
-const CUSTOM_SESSION_VIEW_PROP_KEYS = new Set<keyof AgentSessionView_01Props>([
-  'preConnectMessage',
-  'supportsChatInput',
-  'supportsVideoInput',
-  'supportsScreenShare',
-  'isPreConnectBufferEnabled',
-  'audioVisualizerType',
-  'audioVisualizerColor',
-  'audioVisualizerColorShift',
-  'audioVisualizerBarCount',
-  'audioVisualizerGridRowCount',
-  'audioVisualizerGridColumnCount',
-  'audioVisualizerRadialBarCount',
-  'audioVisualizerRadialRadius',
-  'audioVisualizerWaveLineWidth',
-  'onMicrophoneError',
-  'className',
-]);
-
 export function AgentSessionView_01({
+  // Custom props — must be destructured so they never reach the DOM <section>.
+  preConnectMessage: _preConnectMessage,
   supportsChatInput = true,
   supportsVideoInput = true,
   supportsScreenShare = true,
+  isPreConnectBufferEnabled: _isPreConnectBufferEnabled,
+  audioVisualizerType: _audioVisualizerType,
   audioVisualizerColor,
   audioVisualizerColorShift,
+  audioVisualizerBarCount: _audioVisualizerBarCount,
+  audioVisualizerGridRowCount: _audioVisualizerGridRowCount,
+  audioVisualizerGridColumnCount: _audioVisualizerGridColumnCount,
+  audioVisualizerRadialBarCount: _audioVisualizerRadialBarCount,
+  audioVisualizerRadialRadius: _audioVisualizerRadialRadius,
   audioVisualizerWaveLineWidth,
   onMicrophoneError,
   ref,
   className,
-  ...rest
+  ...props
 }: React.ComponentProps<'section'> & AgentSessionView_01Props) {
-  // Keep the public API, but never forward custom visualizer/session props to the DOM.
-  const domProps = Object.fromEntries(
-    Object.entries(rest).filter(
-      ([key]) => !CUSTOM_SESSION_VIEW_PROP_KEYS.has(key as keyof AgentSessionView_01Props)
-    )
-  ) as React.ComponentProps<'section'>;
-
   const session = useSessionContext();
   const { messages } = useSessionMessages(session);
   const { state: agentState } = useAgent();
@@ -168,13 +151,13 @@ export function AgentSessionView_01({
         'bg-background relative z-10 h-full w-full overflow-x-hidden overflow-y-hidden',
         className
       )}
-      {...domProps}
+      {...props}
     >
       <SessionStatusBadge />
       <Fade top className="absolute inset-x-4 top-0 z-10 h-28" />
 
       {/* Status → Voice stage → Transcript → Controls */}
-      <div className="absolute inset-x-0 top-14 z-20 sm:top-16">
+      <div className="absolute inset-x-0 top-16 z-20 sm:top-[4.5rem]">
         <VoiceStagePanel
           audioVisualizerColor={audioVisualizerColor}
           audioVisualizerColorShift={audioVisualizerColorShift}
@@ -182,7 +165,7 @@ export function AgentSessionView_01({
         />
       </div>
 
-      {/* Transcript below the voice stage */}
+      {/* Transcript below the waveform */}
       <div className="animate-in fade-in absolute inset-x-3 top-[300px] bottom-[150px] z-30 flex min-h-0 flex-col duration-500 sm:inset-x-6 sm:top-[340px] md:inset-x-12 md:bottom-[190px]">
         <AgentChatTranscript
           agentState={agentState}
