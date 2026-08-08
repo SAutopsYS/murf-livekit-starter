@@ -35,8 +35,7 @@ export interface AppConfig {
 export const APP_CONFIG_DEFAULTS: AppConfig = {
   companyName: 'Learning & Literacy Tutor',
   pageTitle: 'AI Voice Learning Tutor',
-  pageDescription:
-    'Practice Spoken English naturally. Talk in Hindi, English or Hinglish.',
+  pageDescription: 'Practice Spoken English naturally. Talk in Hindi, English or Hinglish.',
 
   supportsChatInput: true,
   supportsVideoInput: true,
@@ -44,26 +43,17 @@ export const APP_CONFIG_DEFAULTS: AppConfig = {
   isPreConnectBufferEnabled: true,
 
   logo: '/murf-logo.svg',
-  accent: '#6366F1',
+  accent: '#0EA5E9',
   logoDark: '/murf-logo-dark.svg',
-  accentDark: '#818cf8',
+  accentDark: '#38BDF8',
   startButtonText: 'Start Talking',
 
-  // optional: audio visualization configuration
-  // audioVisualizerType: 'bar',
-  // audioVisualizerColor: '#002cf2',
-  // audioVisualizerColorDark: '#1fd5f9',
-  // audioVisualizerColorShift: 0.3,
-  // audioVisualizerBarCount: 5,
-  // audioVisualizerType: 'radial',
-  // audioVisualizerRadialBarCount: 24,
-  // audioVisualizerRadialRadius: 100,
-  // audioVisualizerType: 'grid',
-  // audioVisualizerGridRowCount: 25,
-  // audioVisualizerGridColumnCount: 25,
-  // audioVisualizerType: 'wave',
-  // audioVisualizerWaveLineWidth: 3,
-  // audioVisualizerType: 'aura',
+  // Voice experience uses the existing LiveKit wave visualizer.
+  audioVisualizerType: 'wave',
+  audioVisualizerColor: '#0EA5E9',
+  audioVisualizerColorDark: '#38BDF8',
+  audioVisualizerColorShift: 0.28,
+  audioVisualizerWaveLineWidth: 4,
 
   // agent dispatch configuration
   agentName: process.env.AGENT_NAME ?? undefined,

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { type MotionProps, motion } from 'motion/react';
-import { useVoiceAssistant } from '@livekit/components-react';
+import { type TrackReferenceOrPlaceholder, useVoiceAssistant } from '@livekit/components-react';
 import { AgentAudioVisualizerAura } from '@/components/agents-ui/agent-audio-visualizer-aura';
 import { AgentAudioVisualizerBar } from '@/components/agents-ui/agent-audio-visualizer-bar';
 import { AgentAudioVisualizerGrid } from '@/components/agents-ui/agent-audio-visualizer-grid';
@@ -27,11 +27,13 @@ interface AudioVisualizerProps extends MotionProps {
   audioVisualizerRadialBarCount?: number;
   audioVisualizerRadialRadius?: number;
   audioVisualizerBarCount?: number;
+  /** Local mic track used while the agent is listening. */
+  listeningAudioTrack?: TrackReferenceOrPlaceholder;
   className?: string;
 }
 
 export function AudioVisualizer({
-  audioVisualizerType = 'bar',
+  audioVisualizerType = 'wave',
   audioVisualizerColor,
   audioVisualizerColorShift = 0.3,
   audioVisualizerBarCount = 5,
@@ -40,11 +42,14 @@ export function AudioVisualizer({
   audioVisualizerGridRowCount = 15,
   audioVisualizerGridColumnCount = 15,
   audioVisualizerWaveLineWidth = 3,
+  listeningAudioTrack,
   isChatOpen,
   className,
   ...props
 }: AudioVisualizerProps) {
-  const { state, audioTrack } = useVoiceAssistant();
+  const { state, audioTrack: agentAudioTrack } = useVoiceAssistant();
+  const audioTrack =
+    state === 'listening' && listeningAudioTrack ? listeningAudioTrack : agentAudioTrack;
 
   switch (audioVisualizerType) {
     case 'aura': {
@@ -68,7 +73,7 @@ export function AudioVisualizer({
             color={audioVisualizerColor}
             colorShift={audioVisualizerColorShift}
             lineWidth={isChatOpen ? audioVisualizerWaveLineWidth * 2 : audioVisualizerWaveLineWidth}
-            className="size-[300px] md:size-[450px]"
+            className={cn('size-[300px] md:size-[450px]', className)}
           />
         </motion.div>
       );

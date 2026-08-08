@@ -17,7 +17,7 @@ import {
 const DEFAULT_SPEED = 5;
 const DEFAULT_AMPLITUDE = 0.025;
 const DEFAULT_FREQUENCY = 10;
-const DEFAULT_TRANSITION: ValueAnimationTransition = { duration: 0.2, ease: 'easeOut' };
+const DEFAULT_TRANSITION: ValueAnimationTransition = { duration: 0.28, ease: 'easeOut' };
 
 function useAnimatedValue<T>(initialValue: T) {
   const [value, setValue] = useState(initialValue);
@@ -51,7 +51,7 @@ export function useAgentAudioVisualizerWave({
 
   const volume = useTrackVolume(audioTrack as TrackReference, {
     fftSize: 512,
-    smoothingTimeConstant: 0.55,
+    smoothingTimeConstant: 0.72,
   });
 
   useEffect(() => {
@@ -66,20 +66,17 @@ export function useAgentAudioVisualizerWave({
         setSpeed(DEFAULT_SPEED);
         animateAmplitude(DEFAULT_AMPLITUDE, DEFAULT_TRANSITION);
         animateFrequency(DEFAULT_FREQUENCY, DEFAULT_TRANSITION);
-        animateOpacity([1.0, 0.3], {
-          duration: 0.75,
-          repeat: Infinity,
-          repeatType: 'mirror',
-        });
+        animateOpacity(1.0, DEFAULT_TRANSITION);
         return;
       case 'thinking':
       case 'connecting':
       case 'initializing':
-        setSpeed(DEFAULT_SPEED * 4);
-        animateAmplitude(DEFAULT_AMPLITUDE / 4, DEFAULT_TRANSITION);
-        animateFrequency(DEFAULT_FREQUENCY * 4, DEFAULT_TRANSITION);
-        animateOpacity([1.0, 0.3], {
-          duration: 0.4,
+        // Keep thinking calm — soft pulse only, no aggressive wave motion.
+        setSpeed(DEFAULT_SPEED * 0.6);
+        animateAmplitude(DEFAULT_AMPLITUDE / 6, DEFAULT_TRANSITION);
+        animateFrequency(DEFAULT_FREQUENCY * 0.5, DEFAULT_TRANSITION);
+        animateOpacity([0.85, 0.4], {
+          duration: 1.1,
           repeat: Infinity,
           repeatType: 'mirror',
         });
@@ -95,7 +92,7 @@ export function useAgentAudioVisualizerWave({
   }, [state, setSpeed, animateAmplitude, animateFrequency, animateOpacity]);
 
   useEffect(() => {
-    if (state === 'speaking') {
+    if (state === 'speaking' || state === 'listening') {
       animateAmplitude(0.015 + 0.4 * volume, { duration: 0 });
       animateFrequency(20 + 60 * volume, { duration: 0 });
     }
