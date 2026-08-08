@@ -4,7 +4,7 @@ A multilingual AI Voice Learning Tutor built with LiveKit, Murf Falcon, Deepgram
 
 [![VoiceForBharat 2026](https://img.shields.io/badge/VoiceForBharat-2026-0EA5E9)](https://murf.ai/)
 [![Learning & Literacy Track](https://img.shields.io/badge/Track-Learning%20%26%20Literacy-22C55E)](https://murf.ai/)
-[![Day 3 Completed](https://img.shields.io/badge/Day%203-Completed-10B981)](https://murf.ai/)
+[![Day 4 Completed](https://img.shields.io/badge/Day%204-Completed-10B981)](https://murf.ai/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Murf Falcon](https://img.shields.io/badge/TTS-Murf%20Falcon-6366F1)](https://murf.ai/api/docs/text-to-speech/streaming)
 [![LiveKit](https://img.shields.io/badge/Transport-LiveKit-002cf2)](https://docs.livekit.io)
@@ -13,7 +13,7 @@ A multilingual AI Voice Learning Tutor built with LiveKit, Murf Falcon, Deepgram
 
 **Built by:** Saloni Saini  
 **Track:** Learning & Literacy  
-**Day 3:** Premium Learning Tutor Experience (Day 1 and Day 2 complete)  
+**Day 4:** Persistent Memory and Knowledge (Day 1, Day 2, and Day 3 complete)  
 **Powered by:** Murf Falcon
 
 ---
@@ -38,6 +38,10 @@ Transformed the starter into an **AI Voice Learning Tutor** with a structured pe
 
 Built a polished **VoiceForBharat** Learning & Literacy frontend experience: session states, live transcript, voice status indicators, wave visualizer, quick practice suggestions, microphone permission handling, responsive design, and accessibility improvements.
 
+### Day 4 (completed)
+
+Added **persistent SQLite memory**, consent-first storage, returning learner recognition, async background lookup, session memory cache, a **Forget Me** privacy tool, multilingual STT with native-script guidance, and a lightweight **Learning Knowledge Base** searched through LiveKit function tools.
+
 ---
 
 ## Project overview
@@ -56,7 +60,7 @@ User speaks → Deepgram STT → Google Gemini → Murf Falcon TTS → LiveKit �
 
 LiveKit carries the audio session. The Python backend runs the agent worker. The Next.js frontend provides the talk UI.
 
-Day 1 delivered a working conversational baseline. Day 2 specializes that baseline into a Learning & Literacy tutor. Day 3 turns the frontend into a complete product-style practice experience.
+Day 1 delivered a working conversational baseline. Day 2 specializes that baseline into a Learning & Literacy tutor. Day 3 turns the frontend into a complete product-style practice experience. Day 4 adds persistent memory, privacy controls, and a function-based learning knowledge base.
 
 ---
 
@@ -82,6 +86,17 @@ Day 1 delivered a working conversational baseline. Day 2 specializes that baseli
 - ✅ Quick Practice Suggestions
 - ✅ Responsive Design
 - ✅ Accessibility
+- ✅ Persistent Memory
+- ✅ SQLite Memory
+- ✅ Consent-Based Memory
+- ✅ Returning Learners
+- ✅ Async Background Lookup
+- ✅ Session Memory Cache
+- ✅ Forget Me Tool
+- ✅ Consent-First Storage
+- ✅ Learning Knowledge Base
+- ✅ Function-Based Knowledge Search
+- ✅ JSON Repository
 
 ### Day 1 baseline
 
@@ -114,6 +129,35 @@ Day 1 delivered a working conversational baseline. Day 2 specializes that baseli
 - **Responsive design** for desktop, tablet, and mobile
 - **Accessibility improvements** for status, dialogs, focus, and decorative icons
 
+### Day 4 persistent memory and knowledge
+
+#### Persistent Memory
+
+- **SQLite Memory** stored in `backend/data/memory.db`
+- **Consent-Based Memory** before anything is saved
+- **Returning Learners** recognized through lookup tools
+- **Async Background Lookup** during session startup
+- **Session Memory Cache** so lookup runs once per conversation
+
+#### Privacy
+
+- **Forget Me Tool** for permanent profile deletion by voice
+- **Consent-First Storage** with no save when the learner declines
+
+#### Knowledge
+
+- **Learning Knowledge Base** for greetings, grammar, pronunciation, vocabulary, and confidence tips
+- **Function-Based Knowledge Search** via LiveKit tool `search_learning_knowledge`
+- **JSON Repository** loaded from `backend/src/knowledge/resources/english_basics.json`
+
+#### Backend Improvements
+
+- **Typed Models** for learner profiles
+- **Repository Pattern** for database-only access
+- **LiveKit Function Tools** for memory and knowledge
+- **Async Lookup** with cached session results
+- **Modular Architecture** (`memory/`, `knowledge/`)
+
 ---
 
 ## Tech stack
@@ -139,9 +183,10 @@ Also used: Silero VAD, LiveKit turn detection, `pnpm` (Node).
 
 | Day | Status | Description |
 | --- | ------ | ----------- |
-| Day 1 | Completed | Voice agent foundation |
-| Day 2 | Completed | Learning Tutor personality |
-| Day 3 | Completed | Premium frontend experience |
+| Day 1 | ✅ Completed | Voice Agent Foundation |
+| Day 2 | ✅ Completed | AI Learning Tutor |
+| Day 3 | ✅ Completed | Premium Frontend Experience |
+| Day 4 | ✅ Completed | Persistent Memory & Knowledge |
 
 ---
 
@@ -173,7 +218,10 @@ _Placeholder: Session ended screen with Practice Again._
 murf-livekit-starter/
 ├── backend/                 # Python voice agent
 │   ├── src/agent.py         # Pipeline (STT / LLM / TTS) + system prompt
-│   ├── tests/               # Agent evaluation tests
+│   ├── src/memory/          # SQLite memory models, repository, tools
+│   ├── src/knowledge/       # JSON knowledge base, search, tools
+│   ├── data/                # Local SQLite db (gitignored *.db)
+│   ├── tests/               # Agent + memory + knowledge tests
 │   ├── .env.example         # Backend env template
 │   └── pyproject.toml       # Python dependencies (uv)
 ├── frontend/                # Next.js voice UI

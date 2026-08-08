@@ -1,0 +1,44 @@
+[
+  {
+    "topic": "greetings",
+    "title": "Basic English Greetings",
+    "keywords": ["greeting", "greetings", "hello", "hi", "good morning", "introduce"],
+    "content": "Common greetings include Hello, Hi, Good morning, and Good evening. To introduce yourself, say My name is and ask And you?"
+  },
+  {
+    "topic": "grammar",
+    "title": "Present Simple",
+    "keywords": ["grammar", "present", "simple", "habits", "routines", "tense"],
+    "content": "Use the present simple for habits and routines. Example: I practice English every day. For he or she, add s: She practices English."
+  },
+  {
+    "topic": "grammar",
+    "title": "Common Grammar Mistakes",
+    "keywords": ["grammar", "mistakes", "articles", "article", "errors"],
+    "content": "Common mistakes include missing articles. Use a before consonant sounds and an before vowel sounds. Use the for something specific."
+  },
+  {
+    "topic": "conversation",
+    "title": "Daily Conversation Tips",
+    "keywords": ["conversation", "daily", "talk", "speaking", "everyday", "chat"],
+    "content": "Keep daily conversations short and clear. Answer with one idea, then ask one follow-up question. Practice topics like school, work, food, and hobbies."
+  },
+  {
+    "topic": "pronunciation",
+    "title": "Pronunciation Advice",
+    "keywords": ["pronunciation", "accent", "sounds", "speak clearly", "phonics"],
+    "content": "Speak slowly and stress important words. Listen and repeat short phrases. Focus on clear endings like ed and s rather than a perfect accent."
+  },
+  {
+    "topic": "vocabulary",
+    "title": "Vocabulary Building",
+    "keywords": ["vocabulary", "words", "phrases", "learn words", "new words"],
+    "content": "Learn words in short phrases, not alone. Review 3 to 5 new words daily and use each word in one spoken sentence."
+  },
+  {
+    "topic": "confidence",
+    "title": "Confidence Speaking Tips",
+    "keywords": ["confidence", "nervous", "fear", "fluency", "practice speaking"],
+    "content": "Confidence grows with small practice. Make mistakes calmly, restart the sentence, and celebrate short wins after each conversation."
+  }
+]

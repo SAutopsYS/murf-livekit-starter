@@ -11,6 +11,10 @@ KMS
 .pytest_cache
 .ruff_cache
 
+# Day 4 local SQLite memory database (keep data/ directory)
+data/*.db
+data/*.db-*
+
 # Claude Code
 .claude/settings.local.json
 .claude/worktrees/
