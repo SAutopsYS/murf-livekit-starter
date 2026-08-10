@@ -28,20 +28,16 @@ export function MicrophonePermissionView({
     >
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_oklch(0.92_0.05_70/_0.45),_transparent_55%),radial-gradient(ellipse_at_bottom,_oklch(0.94_0.03_250/_0.35),_transparent_50%)] dark:bg-[radial-gradient(ellipse_at_top,_oklch(0.28_0.05_70/_0.4),_transparent_55%),radial-gradient(ellipse_at_bottom,_oklch(0.22_0.04_250/_0.3),_transparent_50%)]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_oklch(0.93_0.05_75/_0.45),_transparent_55%),radial-gradient(ellipse_at_bottom,_oklch(0.94_0.03_230/_0.3),_transparent_50%)] dark:bg-[radial-gradient(ellipse_at_top,_oklch(0.28_0.05_75/_0.35),_transparent_55%),radial-gradient(ellipse_at_bottom,_oklch(0.22_0.04_230/_0.25),_transparent_50%)]"
       />
 
-      <div className="animate-in fade-in zoom-in-95 relative z-10 w-full max-w-md rounded-3xl border border-amber-500/20 bg-white/55 p-8 text-center shadow-[0_20px_60px_-28px_rgba(15,23,42,0.35)] backdrop-blur-xl duration-500 sm:p-10 dark:border-amber-400/20 dark:bg-white/5">
+      <div className="animate-in fade-in zoom-in-95 surface-panel relative z-10 w-full max-w-md border-amber-500/25 p-8 text-center duration-500 sm:p-10 dark:border-amber-400/20">
         <div
           aria-hidden
-          className="mx-auto mb-5 flex size-14 items-center justify-center rounded-full border border-amber-500/20 bg-amber-500/10 text-2xl text-amber-600 dark:text-amber-300"
+          className="mx-auto mb-5 flex size-14 items-center justify-center rounded-full border border-amber-500/25 bg-amber-500/10 text-amber-600 dark:text-amber-300"
         >
           <WarningIcon weight="bold" className="size-7" />
         </div>
-
-        <p aria-hidden className="mb-2 text-2xl">
-          🎤
-        </p>
 
         <h2
           id="mic-permission-title"
@@ -62,7 +58,7 @@ export function MicrophonePermissionView({
           <Button
             size="lg"
             onClick={onRetry}
-            className="h-12 min-w-[14rem] rounded-full px-8 text-sm font-bold tracking-[0.14em] uppercase focus-visible:ring-2 focus-visible:ring-offset-2 sm:h-14 sm:min-w-[16rem]"
+            className="btn-premium h-12 min-w-[14rem] px-8 text-sm font-bold tracking-[0.14em] uppercase sm:h-14 sm:min-w-[16rem]"
           >
             Enable Microphone
           </Button>
@@ -70,7 +66,7 @@ export function MicrophonePermissionView({
             <Button
               variant="ghost"
               onClick={onBack}
-              className="text-muted-foreground rounded-full focus-visible:ring-2"
+              className="text-muted-foreground rounded-full transition-colors hover:bg-white/50 focus-visible:ring-2 dark:hover:bg-white/10"
             >
               Back to Ready
             </Button>

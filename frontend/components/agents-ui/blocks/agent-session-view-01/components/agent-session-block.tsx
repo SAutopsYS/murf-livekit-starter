@@ -153,10 +153,13 @@ export function AgentSessionView_01({
       )}
       {...props}
     >
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_oklch(0.94_0.04_230/_0.35),_transparent_50%)] dark:bg-[radial-gradient(ellipse_at_top,_oklch(0.26_0.04_230/_0.35),_transparent_50%)]"
+      />
       <SessionStatusBadge />
       <Fade top className="absolute inset-x-4 top-0 z-10 h-28" />
 
-      {/* Status → Voice stage → Transcript → Controls */}
       <div className="absolute inset-x-0 top-16 z-20 sm:top-[4.5rem]">
         <VoiceStagePanel
           audioVisualizerColor={audioVisualizerColor}
@@ -165,7 +168,6 @@ export function AgentSessionView_01({
         />
       </div>
 
-      {/* Transcript below the waveform */}
       <div className="animate-in fade-in absolute inset-x-3 top-[300px] bottom-[150px] z-30 flex min-h-0 flex-col duration-500 sm:inset-x-6 sm:top-[340px] md:inset-x-12 md:bottom-[190px]">
         <AgentChatTranscript
           agentState={agentState}
@@ -174,12 +176,11 @@ export function AgentSessionView_01({
         />
       </div>
 
-      {/* Bottom controls */}
       <motion.div
         {...BOTTOM_VIEW_MOTION_PROPS}
         className="absolute inset-x-3 bottom-0 z-50 md:inset-x-12"
       >
-        <div className="bg-background relative mx-auto max-w-2xl pb-3 md:pb-12">
+        <div className="relative mx-auto max-w-2xl pb-3 md:pb-12">
           <Fade bottom className="absolute inset-x-0 top-0 h-4 -translate-y-full" />
           <AgentControlBar
             variant="livekit"
@@ -190,6 +191,7 @@ export function AgentSessionView_01({
             onDeviceError={({ source, error }) => {
               onMicrophoneError?.(error, source);
             }}
+            className="border-white/50 bg-white/70 shadow-[0_16px_40px_-20px_rgba(15,23,42,0.35)] backdrop-blur-xl dark:border-white/10 dark:bg-white/10"
           />
         </div>
       </motion.div>

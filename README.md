@@ -4,7 +4,11 @@ A multilingual AI Voice Learning Tutor built with LiveKit, Murf Falcon, Deepgram
 
 [![VoiceForBharat 2026](https://img.shields.io/badge/VoiceForBharat-2026-0EA5E9)](https://murf.ai/)
 [![Learning & Literacy Track](https://img.shields.io/badge/Track-Learning%20%26%20Literacy-22C55E)](https://murf.ai/)
-[![Day 5 Completed](https://img.shields.io/badge/Day%205-Completed-10B981)](https://murf.ai/)
+[![Day 6 Completed](https://img.shields.io/badge/Day%206-Completed-10B981)](https://murf.ai/)
+[![163 Tests Passing](https://img.shields.io/badge/Tests-163%20Passing-22C55E)](./backend/tests)
+[![Production Ready](https://img.shields.io/badge/Status-Production%20Ready-0EA5E9)](#)
+[![Public GitHub Ready](https://img.shields.io/badge/GitHub-Ready-111827)](#)
+[![VoiceForBharat Ready](https://img.shields.io/badge/VoiceForBharat-Ready-F59E0B)](https://murf.ai/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Murf Falcon](https://img.shields.io/badge/TTS-Murf%20Falcon-6366F1)](https://murf.ai/api/docs/text-to-speech/streaming)
 [![LiveKit](https://img.shields.io/badge/Transport-LiveKit-002cf2)](https://docs.livekit.io)
@@ -13,8 +17,9 @@ A multilingual AI Voice Learning Tutor built with LiveKit, Murf Falcon, Deepgram
 
 **Built by:** Saloni Saini  
 **Track:** Learning & Literacy  
-**Day 5:** External Tools & Intelligent Tool Chaining (Days 1–4 complete)  
-**Powered by:** Murf Falcon
+**Day 6:** Outbound Calling & Telephony (Days 1–5 complete)  
+**Powered by:** Murf Falcon  
+**Status:** Production Ready · Public GitHub Ready · VoiceForBharat Ready · **163 tests passing**
 
 ---
 
@@ -46,6 +51,10 @@ Added **persistent SQLite memory**, consent-first storage, returning learner rec
 
 Added **Learning & Literacy external tools** with intelligent chaining: exercise lookup (local JSON + optional HTTP provider), rule-based spoken-answer scoring, adaptive follow-up recommendations, topic-aware practice, provider failover/retry/cooldown, session rotation, request cache, validation, tool registry, tool manager, and performance metrics — all via LiveKit function tools without changing the voice pipeline.
 
+### Day 6 (completed)
+
+Added **outbound telephony** for the Learning Tutor: typed telephony configuration, call preparation and LiveKit SIP outbound placement, deterministic conversation bootstrap (English + Hindi Devanagari), daily-practice coordinator reusing Day 5 memory/exercise tools, outbound speaking evaluation with recommendations, and structured call-outcome handling — without changing the browser voice pipeline or frontend.
+
 ---
 
 ## Project overview
@@ -64,7 +73,7 @@ User speaks → Deepgram STT → Google Gemini → Murf Falcon TTS → LiveKit �
 
 LiveKit carries the audio session. The Python backend runs the agent worker. The Next.js frontend provides the talk UI.
 
-Day 1 delivered a working conversational baseline. Day 2 specializes that baseline into a Learning & Literacy tutor. Day 3 turns the frontend into a complete product-style practice experience. Day 4 adds persistent memory, privacy controls, and a function-based learning knowledge base. Day 5 adds external learning tools, provider failover, and intelligent tool chaining.
+Day 1 delivered a working conversational baseline. Day 2 specializes that baseline into a Learning & Literacy tutor. Day 3 turns the frontend into a complete product-style practice experience. Day 4 adds persistent memory, privacy controls, and a function-based learning knowledge base. Day 5 adds external learning tools, provider failover, and intelligent tool chaining. Day 6 adds outbound telephony so the tutor can call learners for daily speaking practice.
 
 ---
 
@@ -115,6 +124,35 @@ Day 1 delivered a working conversational baseline. Day 2 specializes that baseli
 - ✅ Tool Registry
 - ✅ Tool Manager
 - ✅ Tool Metrics
+- ✅ Telephony Configuration
+- ✅ Outbound Call Service
+- ✅ LiveKit Telephony Integration
+- ✅ Conversation Bootstrap
+- ✅ Daily Practice Coordinator
+- ✅ Outbound Learning Session
+- ✅ Call Outcome Handling
+- ✅ Telephony Metrics & Diagnostics
+- ✅ Runtime Feature Flags
+- ✅ Production Readiness Report
+
+### Core capabilities
+
+| Area | What ships |
+| ---- | ---------- |
+| **LiveKit Voice Agent** | Real-time browser voice session with agent dispatch (`my-agent`) |
+| **Murf Falcon** | Low-latency TTS (`Anisha`, conversational style) |
+| **Persistent Memory** | Consent-first SQLite learner profiles + Forget Me |
+| **Knowledge Repository** | JSON learning tips via `search_learning_knowledge` |
+| **External Exercise Provider** | Optional HTTP exercises with local JSON fallback |
+| **Tool Registry** | Dev-facing capability discovery for learning tools |
+| **Tool Manager** | Internal validated execution pipeline + metrics |
+| **Validation Layer** | Structured tool response sanitization |
+| **Telephony** | Typed config, health, diagnostics, feature flags |
+| **Outbound Calling** | LiveKit SIP outbound placement with structured errors |
+| **Conversation Bootstrap** | Deterministic EN / Hindi (Devanagari) call intro |
+| **Daily Practice Coordinator** | Memory lookup → exercise preparation |
+| **Speaking Evaluation** | Score → recommend → optional follow-up exercise |
+| **Call Outcome Handling** | Answered / busy / no-answer / voicemail / rejected / failed |
 
 ### Day 1 baseline
 
@@ -209,6 +247,49 @@ Day 1 delivered a working conversational baseline. Day 2 specializes that baseli
 - Dependency injection
 - Robust logging
 
+### Day 6 Completed
+
+#### Outbound Telephony
+
+- **Telephony Configuration** — cached LiveKit/Twilio/SIP settings
+- **Outbound Call Service** — prepare and place structured outbound calls
+- **LiveKit Telephony Integration** — SIP participant outbound dialing
+- **Conversation Bootstrap** — deterministic intro with stop instruction
+- **Daily Practice Coordinator** — memory lookup → exercise preparation
+- **Outbound Learning Session** — score → recommend → optional follow-up
+- **Call Outcome Handling** — answered/busy/no-answer/voicemail/rejected/failed
+
+#### Production Improvements
+
+- Typed Telephony Configuration
+- Structured Validation
+- Dependency Injection
+- Reusable Telephony Services
+- Safe Logging
+- Deterministic Bootstrap
+- Structured Errors
+
+#### Bonus Features
+
+- **Telephony Metrics** — in-memory operational counters
+- **Operational Counters** — calls, bootstrap, learning, evaluation, outcomes
+- **In-memory Metrics Snapshot** — `get_metrics()` / health metrics block
+- **Lightweight Observability** — audit lifecycle events (no persistence)
+- **Outbound Call Audit Logger** — structured `Audit event:` logs
+- **Runtime Feature Flags** — telephony / outbound / bootstrap / learning / evaluation / metrics / audit / diagnostics toggles
+- **Production Readiness** — end-to-end readiness verification
+- **Aggregated health report** — configuration, provider, metrics, feature flags
+- **Safe operational checks** — no secrets or SDK objects exposed
+- **Structured production summary** — `generate_readiness_report()`
+
+#### Production Diagnostics
+
+- Startup self-check
+- Configuration verification
+- Provider readiness
+- Metrics verification
+- Structured health reporting
+
 ---
 
 ## Tech stack
@@ -230,7 +311,7 @@ Also used: Silero VAD, LiveKit turn detection, `pnpm` (Node).
 
 ---
 
-## Challenge progress
+## VoiceForBharat Challenge Progress
 
 | Day | Status | Description |
 | --- | ------ | ----------- |
@@ -239,6 +320,9 @@ Also used: Silero VAD, LiveKit turn detection, `pnpm` (Node).
 | Day 3 | ✅ Completed | Premium Frontend Experience |
 | Day 4 | ✅ Completed | Persistent Memory & Knowledge |
 | Day 5 | ✅ Completed | External Tools & Intelligent Tool Chaining |
+| Day 6 | ✅ Completed | Outbound Calling & Telephony |
+
+**Submission status:** Day 6 complete · Production Ready · Public GitHub Ready · VoiceForBharat Ready
 
 ---
 
@@ -267,32 +351,28 @@ _Placeholder: Session ended screen with Practice Again._
 ## Project structure
 
 ```text
-murf-livekit-starter/
-├── backend/                 # Python voice agent
-│   ├── src/agent.py         # Pipeline (STT / LLM / TTS) + system prompt
-│   ├── src/memory/          # SQLite memory models, repository, tools
-│   ├── src/knowledge/       # JSON knowledge base, search, tools
-│   ├── data/                # Local SQLite db (gitignored *.db)
-│   ├── tests/               # Agent + memory + knowledge tests
-│   ├── .env.example         # Backend env template
-│   └── pyproject.toml       # Python dependencies (uv)
-├── frontend/                # Next.js voice UI
-│   ├── app/                 # Pages + LiveKit token API
-│   ├── components/          # Agents UI + app shell
-│   ├── app-config.ts        # Branding / feature config
-│   ├── .env.example         # Frontend env template
-│   └── package.json         # Node dependencies (pnpm)
-├── start_app.sh             # Start all services (macOS / Linux)
-├── start_app.ps1            # Start all services (Windows)
-└── README.md                # This file
-```
-
-High-level layout:
-
-```text
-frontend/
-backend/
-README.md
+Amurf-livekit-starter/
+├── backend/                      # Python voice agent (LiveKit Agents + uv)
+│   ├── src/agent.py              # Pipeline (STT / LLM / TTS) + system prompt
+│   ├── src/memory/               # SQLite memory models, repository, tools
+│   ├── src/knowledge/            # JSON knowledge base, search, tools
+│   ├── src/tools/                # Learning tools, provider, registry, manager
+│   │   └── resources/exercises.json
+│   ├── src/telephony/            # Outbound calling, bootstrap, metrics, flags
+│   ├── data/                     # Local SQLite db (gitignored *.db)
+│   ├── tests/                    # Day 1–6 + bonus tests (163 passing)
+│   ├── .env.example              # Backend env template (placeholders only)
+│   └── pyproject.toml            # Python dependencies (uv)
+├── frontend/                     # Next.js voice UI
+│   ├── app/                      # Pages + LiveKit token API
+│   ├── components/               # Agents UI + app shell
+│   ├── app-config.ts             # Branding / feature config
+│   ├── .env.example              # Frontend env template
+│   └── package.json              # Node dependencies (pnpm)
+├── start_app.sh                  # Start all services (macOS / Linux)
+├── start_app.ps1                 # Start all services (Windows)
+├── AGENTS.md                     # Contributor / agent notes
+└── README.md                     # This file
 ```
 
 ---
@@ -314,7 +394,7 @@ README.md
 
 ```bash
 git clone <your-repo-url>
-cd murf-livekit-starter
+cd Amurf-livekit-starter
 ```
 
 ### 2. Configure environment variables
@@ -348,6 +428,18 @@ cp frontend/.env.example frontend/.env.local
 | `LIVEKIT_API_KEY` | Same as backend |
 | `LIVEKIT_API_SECRET` | Same as backend |
 | `AGENT_NAME` | Set to `my-agent` (matches the backend agent name) |
+
+**Optional backend telephony (Day 6)** — placeholders in `backend/.env.example`:
+
+| Variable | Notes |
+| -------- | ----- |
+| `LIVEKIT_SIP_OUTBOUND_TRUNK_ID` | LiveKit SIP outbound trunk id |
+| `TWILIO_ACCOUNT_SID` / `TWILIO_AUTH_TOKEN` / `TWILIO_PHONE_NUMBER` | Optional provider credentials |
+| `OUTBOUND_CALLER_NAME` | Defaults to `VoiceForBharat Tutor` |
+| `DEFAULT_COUNTRY_CODE` | Defaults to `+91` |
+| `TELEPHONY_ENABLED`, `OUTBOUND_CALLING_ENABLED`, … | Feature flags (default `true`) |
+
+Optional Day 5 exercise provider: `EXERCISE_SOURCE`, `EXERCISE_API_URL`, and related timeout/retry vars (see `.env.example`).
 
 ### 3. Install backend dependencies
 
@@ -412,6 +504,33 @@ uv run python src/agent.py console
 
 ---
 
+## Testing
+
+From `backend/`:
+
+```bash
+cd backend
+uv run pytest
+```
+
+Requires LiveKit credentials for agent evaluation tests. Current suite: **163 tests passing** (Days 1–6 + telephony bonuses).
+
+Also useful:
+
+```bash
+uv run ruff check .
+uv run ruff format .
+```
+
+Frontend:
+
+```bash
+cd frontend
+pnpm lint
+```
+
+---
+
 ## Architecture
 
 ```mermaid
@@ -422,6 +541,15 @@ flowchart LR
     D -->|audio| E[LiveKit]
     E -->|stream| F[User hears]
 ```
+
+Outbound telephony (Day 6) is a separate backend path:
+
+```text
+TelephonyService → prepare_call → LiveKit SIP dial
+                 → bootstrap → daily practice → evaluate → call outcome
+```
+
+Browser voice sessions and Murf Falcon TTS remain unchanged.
 
 ---
 
@@ -434,6 +562,18 @@ flowchart LR
 5. **Knowledge lookup** — grammar / pronunciation / vocabulary tip  
 6. **Forget Me** — profile removed; restart shows no learner  
 7. **API failure** — `EXERCISE_SOURCE=api` with forced failure → local fallback, no interruption  
+
+---
+
+## Day 6 demo checklist
+
+1. **Telephony health** — configuration loads, service reports ready  
+2. **Outbound call initiated** — prepare → LiveKit dial → structured `calling` response  
+3. **Bootstrap introduction** — identity + reason + stop instruction (EN / Hindi Devanagari)  
+4. **Daily practice exercise** — lookup level → `get_next_exercise` → ready state  
+5. **Spoken answer evaluation** — score → recommendation → follow-up exercise  
+6. **Call outcome handling** — answered/busy/no-answer/voicemail/rejected/failed  
+7. **LiveKit failure fallback** — structured `Unable to place outbound call.` (no stack traces)  
 
 ---
 

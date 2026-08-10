@@ -51,10 +51,10 @@ const TranscriptMessage = memo(function TranscriptMessage({
     >
       <div
         className={cn(
-          'mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full border shadow-sm backdrop-blur-md',
+          'mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full border shadow-sm backdrop-blur-md transition-colors',
           isUser
-            ? 'border-sky-300/40 bg-sky-500/10 text-sky-700 dark:text-sky-300'
-            : 'text-foreground border-white/40 bg-white/55 dark:border-white/10 dark:bg-white/10'
+            ? 'border-sky-300/45 bg-sky-500/12 text-sky-700 dark:text-sky-300'
+            : 'text-foreground border-white/45 bg-white/65 dark:border-white/10 dark:bg-white/10'
         )}
       >
         {isUser ? (
@@ -67,10 +67,10 @@ const TranscriptMessage = memo(function TranscriptMessage({
       <div className={cn('flex max-w-[70%] flex-col gap-1', isUser && 'items-end')}>
         <div
           className={cn(
-            'rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm',
+            'rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm transition-shadow',
             isUser
-              ? 'rounded-br-md bg-linear-to-br from-sky-500 to-cyan-500 text-white shadow-sky-500/20'
-              : 'text-foreground rounded-bl-md border border-white/45 bg-white/60 shadow-[0_8px_24px_-16px_rgba(15,23,42,0.35)] backdrop-blur-md dark:border-white/10 dark:bg-white/10'
+              ? 'rounded-br-md bg-linear-to-br from-sky-500 to-cyan-500 text-white shadow-[0_10px_24px_-12px_rgba(14,165,233,0.55)]'
+              : 'text-foreground rounded-bl-md border border-white/50 bg-white/70 shadow-[0_10px_28px_-16px_rgba(15,23,42,0.32)] backdrop-blur-md dark:border-white/10 dark:bg-white/10'
           )}
         >
           <MessageResponse className="[&_*]:text-inherit">{message}</MessageResponse>
@@ -119,27 +119,34 @@ export function AgentChatTranscript({
   return (
     <div
       className={cn(
-        'flex h-full min-h-0 flex-col overflow-hidden rounded-3xl border border-white/40 bg-white/45 shadow-[0_16px_48px_-24px_rgba(15,23,42,0.35)] backdrop-blur-xl dark:border-white/10 dark:bg-white/5',
+        'flex h-full min-h-0 flex-col overflow-hidden rounded-3xl border border-white/50 bg-white/55 shadow-[0_18px_52px_-24px_rgba(15,23,42,0.32)] backdrop-blur-xl dark:border-white/10 dark:bg-white/5',
         className
       )}
       {...props}
     >
-      <div className="border-border/40 text-muted-foreground border-b px-4 py-2.5 text-center text-[11px] font-medium tracking-wide uppercase">
+      <div className="border-border/50 text-muted-foreground flex items-center justify-center gap-2 border-b px-4 py-2.5 text-center text-[11px] font-medium tracking-[0.14em] uppercase">
+        <span
+          aria-hidden
+          className="size-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.55)]"
+        />
         Live Transcript
       </div>
 
       <Conversation className="min-h-0 flex-1" aria-label="Conversation transcript">
         <ConversationContent className="gap-5 p-3.5 sm:gap-6 sm:p-5">
           {messages.length === 0 && agentState !== 'thinking' && (
-            <div className="animate-in fade-in flex flex-1 flex-col items-center justify-center px-4 py-10 text-center duration-500">
-              <p aria-hidden className="mb-2 text-2xl">
-                👋
-              </p>
+            <div className="animate-in fade-in flex flex-1 flex-col items-center justify-center px-4 py-12 text-center duration-500">
+              <div
+                aria-hidden
+                className="mb-3 flex size-11 items-center justify-center rounded-full border border-sky-200/50 bg-sky-50 text-sky-600 dark:border-sky-400/20 dark:bg-sky-400/10 dark:text-sky-300"
+              >
+                <GraduationCapIcon weight="bold" className="size-5" />
+              </div>
               <p className="text-foreground text-sm font-medium sm:text-base">
                 Start speaking whenever you&apos;re ready.
               </p>
-              <p className="text-muted-foreground mt-1 text-xs sm:text-sm">
-                Your conversation will appear here.
+              <p className="text-muted-foreground mt-1.5 max-w-xs text-xs leading-relaxed sm:text-sm">
+                Your conversation will appear here as you practice.
               </p>
             </div>
           )}

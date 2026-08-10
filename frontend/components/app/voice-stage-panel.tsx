@@ -50,7 +50,7 @@ function getStageCopy(agentState: string): StageCopy {
 
 const TONE_CLASS: Record<StageCopy['tone'], string> = {
   listening: 'text-sky-600 dark:text-sky-300',
-  thinking: 'text-violet-600 dark:text-violet-300',
+  thinking: 'text-amber-700 dark:text-amber-300',
   speaking: 'text-cyan-700 dark:text-cyan-300',
   ready: 'text-foreground/80',
   ended: 'text-muted-foreground',
@@ -59,8 +59,8 @@ const TONE_CLASS: Record<StageCopy['tone'], string> = {
 const ORB_CLASS: Record<StageCopy['tone'], string> = {
   ready: 'bg-sky-400/50 shadow-[0_0_24px_rgba(14,165,233,0.35)]',
   listening: 'bg-sky-400 shadow-[0_0_28px_rgba(14,165,233,0.55)]',
-  thinking: 'bg-violet-400 shadow-[0_0_24px_rgba(167,139,250,0.45)] animate-pulse',
-  speaking: 'bg-cyan-400 shadow-[0_0_32px_rgba(34,211,238,0.6)] animate-pulse scale-110',
+  thinking: 'bg-amber-400 shadow-[0_0_24px_rgba(251,191,36,0.45)] animate-pulse',
+  speaking: 'bg-cyan-400 shadow-[0_0_32px_rgba(34,211,238,0.55)] animate-pulse scale-110',
   ended: 'bg-slate-300/70 shadow-[0_0_16px_rgba(148,163,184,0.25)]',
 };
 
@@ -95,7 +95,7 @@ export function VoiceStagePanel({
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -4, scale: 0.98 }}
           transition={{ duration: 0.22, ease: 'easeOut' }}
-          className="mb-3 text-center"
+          className="mb-3.5 text-center"
         >
           <p
             className={cn(
@@ -112,21 +112,20 @@ export function VoiceStagePanel({
         </motion.div>
       </AnimatePresence>
 
-      {/* Premium AI orb — Tailwind only */}
       <div
         aria-hidden
         className={cn(
-          'mb-3 size-3 rounded-full transition-all duration-500 sm:size-3.5',
+          'mb-3.5 size-3 rounded-full transition-all duration-500 sm:size-3.5',
           ORB_CLASS[stage.tone]
         )}
       />
 
       <div
         className={cn(
-          'relative flex h-[156px] w-full items-center justify-center overflow-hidden rounded-3xl border border-sky-200/40 bg-white/50 px-3 shadow-[0_16px_48px_-28px_rgba(14,165,233,0.45)] backdrop-blur-xl transition-shadow duration-300 sm:h-[188px] dark:border-sky-400/15 dark:bg-white/5',
-          stage.tone === 'thinking' && 'shadow-violet-500/15',
-          stage.tone === 'listening' && 'shadow-sky-500/20',
-          stage.tone === 'speaking' && 'shadow-cyan-500/20'
+          'relative flex h-[156px] w-full items-center justify-center overflow-hidden rounded-3xl border border-sky-200/45 bg-white/55 px-3 shadow-[0_18px_52px_-28px_rgba(14,165,233,0.42)] backdrop-blur-xl transition-all duration-300 sm:h-[188px] dark:border-sky-400/15 dark:bg-white/5',
+          stage.tone === 'thinking' && 'shadow-amber-500/15',
+          stage.tone === 'listening' && 'shadow-sky-500/25',
+          stage.tone === 'speaking' && 'shadow-cyan-500/25'
         )}
       >
         <AudioVisualizer

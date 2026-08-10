@@ -69,7 +69,7 @@ const STATUS_META: Record<StatusLabel, { emoji: string; colorClass: string; emoj
     },
     Thinking: {
       emoji: '🧠',
-      colorClass: 'text-violet-700 dark:text-violet-300',
+      colorClass: 'text-amber-700 dark:text-amber-300',
       emojiClass: 'animate-pulse',
     },
     Speaking: {
@@ -101,7 +101,7 @@ export function SessionStatusBadge({ className }: { className?: string }) {
         aria-live="polite"
         aria-label={`Session status: ${label}${loadingHint ? `. ${loadingHint}` : ''}`}
         className={cn(
-          'animate-in fade-in slide-in-from-top-2 flex max-w-full items-center gap-1.5 rounded-full border border-white/50 bg-white/65 px-2.5 py-1 text-xs font-medium tracking-wide shadow-[0_8px_24px_-12px_rgba(15,23,42,0.35)] backdrop-blur-md duration-300 sm:gap-2 sm:px-3 sm:py-1.5 sm:text-sm dark:border-white/10 dark:bg-white/10',
+          'animate-in fade-in slide-in-from-top-2 flex max-w-full items-center gap-1.5 rounded-full border border-white/55 bg-white/75 px-3 py-1.5 text-xs font-medium tracking-wide shadow-[0_10px_28px_-12px_rgba(15,23,42,0.32)] backdrop-blur-md duration-300 sm:gap-2 sm:px-3.5 sm:py-1.5 sm:text-sm dark:border-white/10 dark:bg-white/10',
           meta.colorClass
         )}
       >

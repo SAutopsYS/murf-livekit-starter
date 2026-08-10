@@ -127,5 +127,5 @@ def test_prompt_and_stt_multilingual_config() -> None:
     assert 'deepgram.STT(model="nova-3", language="multi")' in text
     assert 'voice="Anisha"' in text
     assert 'style="Conversation"' in text
-    assert "text_pacing=True" in text
+    assert "text_pacing=False" in text
     assert 'locale="en-IN"' not in text
