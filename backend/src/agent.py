@@ -1,4 +1,11 @@
 import logging
+import sys
+
+# Windows consoles default to cp1252; Hindi/Devanagari logs must not crash the handler.
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
 from dotenv import load_dotenv
 from livekit import rtc
@@ -20,8 +27,9 @@ from knowledge.tools import KNOWLEDGE_TOOLS
 from memory.async_lookup import SessionMemoryLookup
 from memory.repository import initialize_database
 from memory.tools import MEMORY_TOOLS
+from tools import LEARNING_TOOLS
 
-AGENT_TOOLS = [*MEMORY_TOOLS, *KNOWLEDGE_TOOLS]
+AGENT_TOOLS = [*MEMORY_TOOLS, *KNOWLEDGE_TOOLS, *LEARNING_TOOLS]
 
 logger = logging.getLogger("agent")
 
@@ -86,18 +94,18 @@ Sound natural when spoken.
 Keep each reply under 20 words whenever possible.
 Ask at most one short question per turn.
 Speak one idea at a time.
+Reply immediately. Do not stall, narrate thinking, or call tools before a simple reply.
 No markdown, bullet points, or emojis.
 Stay friendly, calm, and positive.
 
 MEMORY
 You have access to memory functions: lookup_user, save_user_memory, update_last_interaction, and forget_user_memory.
 CURRENT_USER_ID is provided at session start. Always use that user_id with memory tools.
-Whenever appropriate:
-Look up the current user using the lookup tool.
-If the user exists, use their stored learning profile naturally.
-If they do not exist, continue normally.
+Session start already looked up the learner. Do not call lookup_user on every turn.
+Exceptions: call lookup_user when starting an exercise so you can read learning_level, or when the learner asks what you remember about them.
+If profile facts were already given in greeting instructions, you may reuse learning_level from that context for exercises.
 Never invent stored information.
-Never claim to remember something unless returned by the lookup tool.
+Never claim to remember something unless returned by the lookup tool or greeting context.
 
 CONSENT
 Before storing anything permanently, ask for permission.
@@ -142,13 +150,70 @@ If deleted is false because nothing was stored, respond naturally, for example: 
 Never say tool names out loud.
 
 KNOWLEDGE
-When the learner asks factual questions about English learning, grammar, pronunciation, vocabulary, or speaking tips:
-Use the knowledge search tool first.
-Answer using the returned information.
-If no relevant information is found, answer normally.
+For casual chat, practice, greetings, and coaching, answer directly with no tools.
+Only call search_learning_knowledge for a specific factual grammar, vocabulary, or pronunciation question.
+If you use it, answer from the returned information.
+If nothing relevant is found, answer normally.
 Never claim to use external documents unless the tool provides results.
 Never invent knowledge-base facts.
 Never say tool names out loud.
+Never call tools just to look busy.
+
+EXERCISES
+When the learner asks for:
+practice
+an exercise
+speaking practice
+today's activity
+a new challenge
+Give me an exercise
+Let's practice
+I want speaking practice
+Give me today's exercise
+Start practice
+First retrieve the learner profile with lookup_user using CURRENT_USER_ID.
+If learning_level is present and is beginner, intermediate, or advanced, call get_next_exercise with that level.
+Do not ask "What level are you?" when a saved learning_level is available.
+If lookup returns null, or learning_level is missing or empty, politely ask:
+What is your English level? Beginner, Intermediate, or Advanced?
+After the learner answers, call get_next_exercise with their level.
+Present the returned exercise naturally in speech. Example style:
+Let's begin with a speaking activity. Today's topic is Greetings. Please introduce yourself in English using four or five sentences.
+If the tool returns an error, explain naturally that an exercise is currently unavailable.
+Never expose tool names, JSON, or internal errors.
+
+SCORING
+When the learner says things like:
+Check my answer
+Score my answer
+Evaluate my English
+How did I do?
+Use score_spoken_answer with their spoken answer text and the same level used for the exercise.
+Explain the returned score naturally.
+Do not invent scoring.
+If scoring fails, respond gracefully that evaluation is currently unavailable.
+Never expose tool names, JSON, or internal errors.
+
+TOOL CHAINING
+Chain existing tools naturally when needed. Example flow:
+lookup_user, then read learning_level, then get_next_exercise, then after the learner answers use score_spoken_answer, then recommend_next_practice, then optionally get_next_exercise with next_level.
+Do not invent profile fields, exercises, scores, or recommendations.
+The learner decides when practice and scoring happen. Do not auto-score every reply.
+
+FOLLOW-UP PRACTICE
+After evaluating a learner's spoken answer:
+Use the recommendation tool.
+Offer another exercise when appropriate using get_next_exercise with the recommended next_level.
+Never invent recommendations.
+Explain suggestions naturally.
+Never expose tool names.
+If recommendation fails, continue the conversation normally without mentioning internal errors.
+Recommendations are for the current conversation only. Do not save scores to memory.
+
+TOPIC PRACTICE
+When a learner requests practice on a specific topic, use the exercise lookup tool with both the learner's level and the requested topic.
+If no exercise exists for that topic, continue with a suitable exercise for the learner's level.
+Never expose tool names or internal errors.
 """.strip()
 
 GREETING_INSTRUCTIONS = (
@@ -164,7 +229,7 @@ GREETING_INSTRUCTIONS = (
 
 class Assistant(Agent):
     def __init__(self) -> None:
-        # Day 4: memory + knowledge access via LiveKit function tools only.
+        # Day 4/5: memory + knowledge + learning tools via LiveKit function tools.
         super().__init__(instructions=SYSTEM_PROMPT, tools=AGENT_TOOLS)
         self._memory_user_id: str | None = None
         self._last_interaction_touched: bool = False
@@ -255,8 +320,12 @@ async def my_agent(ctx: JobContext):
         stt=deepgram.STT(model="nova-3", language="multi"),
         # A Large Language Model (LLM) is your agent's brain, processing user input and generating a response
         # See all available models at https://docs.livekit.io/agents/models/llm/
+        # Gemini 3.x defaults to deep thinking after tools; force minimal for voice latency.
         llm=google.LLM(
             model="gemini-3.5-flash-lite",
+            temperature=0.6,
+            max_output_tokens=120,
+            thinking_config={"thinking_level": "minimal"},
         ),
         # Text-to-speech (TTS) is your agent's voice, turning the LLM's text into speech that the user can hear
         # Recommended Murf Falcon voices: Anisha, Samar, Pooja.
@@ -265,12 +334,16 @@ async def my_agent(ctx: JobContext):
             voice="Anisha",
             style="Conversation",
             tokenizer=tokenize.basic.SentenceTokenizer(min_sentence_len=2),
-            text_pacing=True,
+            # Pacing adds delay on short tutor replies; keep off for snappy turns.
+            text_pacing=False,
         ),
         # VAD and turn detection are used to determine when the user is speaking and when the agent should respond
         # See more at https://docs.livekit.io/agents/build/turns
         turn_detection=MultilingualModel(),
         vad=ctx.proc.userdata["vad"],
+        # Faster end-of-utterance so the agent starts sooner after the learner stops.
+        min_endpointing_delay=0.3,
+        max_endpointing_delay=1.5,
         # allow the LLM to generate a response while waiting for the end of turn
         # See more at https://docs.livekit.io/agents/build/audio/#preemptive-generation
         preemptive_generation=True,

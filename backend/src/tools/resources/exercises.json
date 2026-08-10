@@ -1,0 +1,44 @@
+{
+  "beginner": [
+    {
+      "id": "b1",
+      "topic": "Greetings",
+      "title": "Introduce Yourself",
+      "exercise": "Introduce yourself in English using 4–5 sentences."
+    },
+    {
+      "id": "b2",
+      "topic": "Daily Routine",
+      "title": "Morning Routine",
+      "exercise": "Describe your morning routine."
+    }
+  ],
+  "intermediate": [
+    {
+      "id": "i1",
+      "topic": "Opinion",
+      "title": "Favorite Movie",
+      "exercise": "Talk about your favorite movie and explain why you like it."
+    },
+    {
+      "id": "i2",
+      "topic": "Travel",
+      "title": "Dream Vacation",
+      "exercise": "Describe your dream vacation."
+    }
+  ],
+  "advanced": [
+    {
+      "id": "a1",
+      "topic": "Technology",
+      "title": "AI Impact",
+      "exercise": "Discuss how Artificial Intelligence is changing education."
+    },
+    {
+      "id": "a2",
+      "topic": "Environment",
+      "title": "Climate Change",
+      "exercise": "Give your opinion on climate change solutions."
+    }
+  ]
+}

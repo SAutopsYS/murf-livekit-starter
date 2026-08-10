@@ -4,7 +4,7 @@ A multilingual AI Voice Learning Tutor built with LiveKit, Murf Falcon, Deepgram
 
 [![VoiceForBharat 2026](https://img.shields.io/badge/VoiceForBharat-2026-0EA5E9)](https://murf.ai/)
 [![Learning & Literacy Track](https://img.shields.io/badge/Track-Learning%20%26%20Literacy-22C55E)](https://murf.ai/)
-[![Day 4 Completed](https://img.shields.io/badge/Day%204-Completed-10B981)](https://murf.ai/)
+[![Day 5 Completed](https://img.shields.io/badge/Day%205-Completed-10B981)](https://murf.ai/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Murf Falcon](https://img.shields.io/badge/TTS-Murf%20Falcon-6366F1)](https://murf.ai/api/docs/text-to-speech/streaming)
 [![LiveKit](https://img.shields.io/badge/Transport-LiveKit-002cf2)](https://docs.livekit.io)
@@ -13,7 +13,7 @@ A multilingual AI Voice Learning Tutor built with LiveKit, Murf Falcon, Deepgram
 
 **Built by:** Saloni Saini  
 **Track:** Learning & Literacy  
-**Day 4:** Persistent Memory and Knowledge (Day 1, Day 2, and Day 3 complete)  
+**Day 5:** External Tools & Intelligent Tool Chaining (Days 1–4 complete)  
 **Powered by:** Murf Falcon
 
 ---
@@ -42,6 +42,10 @@ Built a polished **VoiceForBharat** Learning & Literacy frontend experience: ses
 
 Added **persistent SQLite memory**, consent-first storage, returning learner recognition, async background lookup, session memory cache, a **Forget Me** privacy tool, multilingual STT with native-script guidance, and a lightweight **Learning Knowledge Base** searched through LiveKit function tools.
 
+### Day 5 (completed)
+
+Added **Learning & Literacy external tools** with intelligent chaining: exercise lookup (local JSON + optional HTTP provider), rule-based spoken-answer scoring, adaptive follow-up recommendations, topic-aware practice, provider failover/retry/cooldown, session rotation, request cache, validation, tool registry, tool manager, and performance metrics — all via LiveKit function tools without changing the voice pipeline.
+
 ---
 
 ## Project overview
@@ -60,7 +64,7 @@ User speaks → Deepgram STT → Google Gemini → Murf Falcon TTS → LiveKit �
 
 LiveKit carries the audio session. The Python backend runs the agent worker. The Next.js frontend provides the talk UI.
 
-Day 1 delivered a working conversational baseline. Day 2 specializes that baseline into a Learning & Literacy tutor. Day 3 turns the frontend into a complete product-style practice experience. Day 4 adds persistent memory, privacy controls, and a function-based learning knowledge base.
+Day 1 delivered a working conversational baseline. Day 2 specializes that baseline into a Learning & Literacy tutor. Day 3 turns the frontend into a complete product-style practice experience. Day 4 adds persistent memory, privacy controls, and a function-based learning knowledge base. Day 5 adds external learning tools, provider failover, and intelligent tool chaining.
 
 ---
 
@@ -97,6 +101,20 @@ Day 1 delivered a working conversational baseline. Day 2 specializes that baseli
 - ✅ Learning Knowledge Base
 - ✅ Function-Based Knowledge Search
 - ✅ JSON Repository
+- ✅ Exercise Lookup Tool
+- ✅ Rule-Based Scoring
+- ✅ Adaptive Practice Recommendation
+- ✅ Topic-Aware Exercises
+- ✅ External Exercise Provider
+- ✅ Local Dataset Fallback
+- ✅ Retry Strategy
+- ✅ Provider Health Cache
+- ✅ Request Cache
+- ✅ Session Exercise Rotation
+- ✅ Tool Validation
+- ✅ Tool Registry
+- ✅ Tool Manager
+- ✅ Tool Metrics
 
 ### Day 1 baseline
 
@@ -158,6 +176,39 @@ Day 1 delivered a working conversational baseline. Day 2 specializes that baseli
 - **Async Lookup** with cached session results
 - **Modular Architecture** (`memory/`, `knowledge/`)
 
+### Day 5 Completed
+
+#### Learning Tools
+
+- **Exercise Lookup Tool** (`get_next_exercise`) with optional topic filter
+- **Rule-Based Scoring** (`score_spoken_answer`) — deterministic, no LLM scoring
+- **Adaptive Practice Recommendation** (`recommend_next_practice`)
+- **LiveKit Function Tools** registered beside memory and knowledge tools
+
+#### Tool Architecture
+
+- **External Provider** (optional HTTP API via `EXERCISE_SOURCE=api`)
+- **Local Dataset Fallback** (`backend/src/tools/resources/exercises.json`)
+- **Retry Strategy** for transient provider failures
+- **Provider Health Cache** with configurable cooldown
+- **Request Cache** for identical exercise requests (TTL)
+- **Session Exercise Rotation** to avoid repeats in one conversation
+- **Tool Validation** and response sanitization
+- **Tool Registry** for capability discovery (dev-only)
+- **Tool Manager** centralized execution pipeline (internal)
+- **Tool Metrics** in-memory timing and success/failure counts
+
+#### Production Improvements
+
+- Deterministic scoring
+- Modular repositories
+- Provider failover
+- Session-only caching
+- Metrics
+- Validation
+- Dependency injection
+- Robust logging
+
 ---
 
 ## Tech stack
@@ -187,6 +238,7 @@ Also used: Silero VAD, LiveKit turn detection, `pnpm` (Node).
 | Day 2 | ✅ Completed | AI Learning Tutor |
 | Day 3 | ✅ Completed | Premium Frontend Experience |
 | Day 4 | ✅ Completed | Persistent Memory & Knowledge |
+| Day 5 | ✅ Completed | External Tools & Intelligent Tool Chaining |
 
 ---
 
@@ -370,6 +422,18 @@ flowchart LR
     D -->|audio| E[LiveKit]
     E -->|stream| F[User hears]
 ```
+
+---
+
+## Day 5 demo checklist
+
+1. **New learner** — consent → memory saved  
+2. **Returning learner** — personalized greeting + saved level reused  
+3. **"Give me an exercise."** — exercise tool fires naturally  
+4. **Spoken answer scoring** — score → recommendation → follow-up exercise  
+5. **Knowledge lookup** — grammar / pronunciation / vocabulary tip  
+6. **Forget Me** — profile removed; restart shows no learner  
+7. **API failure** — `EXERCISE_SOURCE=api` with forced failure → local fallback, no interruption  
 
 ---
 

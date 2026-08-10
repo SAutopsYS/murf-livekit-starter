@@ -69,7 +69,7 @@ def test_knowledge_tool_registered() -> None:
     assert "search_learning_knowledge" in agent_tool_names
     assert "lookup_user" in agent_tool_names
 
-    assert "Use the knowledge search tool first" in SYSTEM_PROMPT
+    assert "search_learning_knowledge" in SYSTEM_PROMPT
     assert (
         Path(__file__).resolve().parents[1]
         / "src"
