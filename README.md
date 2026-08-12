@@ -4,8 +4,8 @@ A multilingual AI Voice Learning Tutor built with LiveKit, Murf Falcon, Deepgram
 
 [![VoiceForBharat 2026](https://img.shields.io/badge/VoiceForBharat-2026-0EA5E9)](https://murf.ai/)
 [![Learning & Literacy Track](https://img.shields.io/badge/Track-Learning%20%26%20Literacy-22C55E)](https://murf.ai/)
-[![Day 7 Completed](https://img.shields.io/badge/Day%207-Completed-10B981)](https://murf.ai/)
-[![226 Tests Passing](https://img.shields.io/badge/Tests-226%20Passing-22C55E)](./backend/tests)
+[![Day 8 Completed](https://img.shields.io/badge/Day%208-Completed-10B981)](https://murf.ai/)
+[![261 Tests Passing](https://img.shields.io/badge/Tests-261%20Passing-22C55E)](./backend/tests)
 [![Production Ready](https://img.shields.io/badge/Status-Production%20Ready-0EA5E9)](#)
 [![Public GitHub Ready](https://img.shields.io/badge/GitHub-Ready-111827)](#)
 [![VoiceForBharat Ready](https://img.shields.io/badge/VoiceForBharat-Ready-F59E0B)](https://murf.ai/)
@@ -17,9 +17,9 @@ A multilingual AI Voice Learning Tutor built with LiveKit, Murf Falcon, Deepgram
 
 **Built by:** Saloni Saini  
 **Track:** Learning & Literacy  
-**Day 7:** Human Help & Intelligent Escalation (Days 1–6 complete)  
+**Day 8:** Call Analytics Dashboard (Days 1–7 complete)  
 **Powered by:** Murf Falcon  
-**Status:** Production Ready · Public GitHub Ready · VoiceForBharat Ready · **226 tests passing**
+**Status:** Production Ready · Public GitHub Ready · VoiceForBharat Ready · **261 tests passing**
 
 ---
 
@@ -59,6 +59,10 @@ Added **outbound telephony** for the Learning Tutor: typed telephony configurati
 
 Added **human-help escalation** for the Learning Tutor: consent-first escalation requests, reference IDs, Discord/webhook human notification with graceful failure, urgency levels, PII sanitization, duplicate detection, status tracking (`open` → `in_progress` → `resolved`), and optional outbound resolution callbacks that reuse Day 6 `TelephonyService` — without changing the browser voice pipeline, memory, knowledge, or database schema.
 
+### Day 8 (completed)
+
+Added a **Call Analytics Dashboard** backed by real call outcomes: total / successful / failed calls, success & failure rates, recent history, filters, auto-refresh, performance latency, language/channel breakdown, deterministic insights, and privacy-safe JSON export — using a separate analytics SQLite store without changing memory schema or the voice pipeline.
+
 ---
 
 ## Project overview
@@ -77,7 +81,7 @@ User speaks → Deepgram STT → Google Gemini → Murf Falcon TTS → LiveKit �
 
 LiveKit carries the audio session. The Python backend runs the agent worker. The Next.js frontend provides the talk UI.
 
-Day 1 delivered a working conversational baseline. Day 2 specializes that baseline into a Learning & Literacy tutor. Day 3 turns the frontend into a complete product-style practice experience. Day 4 adds persistent memory, privacy controls, and a function-based learning knowledge base. Day 5 adds external learning tools, provider failover, and intelligent tool chaining. Day 6 adds outbound telephony so the tutor can call learners for daily speaking practice. Day 7 adds consent-first human-help escalation with safe notification delivery and optional resolution callbacks.
+Day 1 delivered a working conversational baseline. Day 2 specializes that baseline into a Learning & Literacy tutor. Day 3 turns the frontend into a complete product-style practice experience. Day 4 adds persistent memory, privacy controls, and a function-based learning knowledge base. Day 5 adds external learning tools, provider failover, and intelligent tool chaining. Day 6 adds outbound telephony so the tutor can call learners for daily speaking practice. Day 7 adds consent-first human-help escalation with safe notification delivery and optional resolution callbacks. Day 8 adds privacy-safe call analytics and a dashboard fed by real call outcomes.
 
 ---
 
@@ -147,6 +151,16 @@ Day 1 delivered a working conversational baseline. Day 2 specializes that baseli
 - ✅ Duplicate Escalation Detection
 - ✅ Escalation Status Tracking
 - ✅ Resolution Callback Preparation
+- ✅ Call Analytics Dashboard
+- ✅ Real Call Outcome Recording
+- ✅ Success / Failure Rates
+- ✅ Recent Call History
+- ✅ Analytics Filters
+- ✅ Auto Refresh Analytics
+- ✅ Call Performance Metrics
+- ✅ Language & Channel Analytics
+- ✅ Deterministic Insights
+- ✅ Privacy-safe JSON Export
 
 ### Core capabilities
 
@@ -338,8 +352,9 @@ Also used: Silero VAD, LiveKit turn detection, `pnpm` (Node).
 | Day 5 | ✅ Completed | External Learning Tools & Intelligent Tool Chaining |
 | Day 6 | ✅ Completed | Outbound Calling & Telephony |
 | Day 7 | ✅ Completed | Human Help & Intelligent Escalation |
+| Day 8 | ✅ Completed | Call Analytics Dashboard |
 
-**Submission status:** Day 7 complete · Production Ready · Public GitHub Ready · VoiceForBharat Ready
+**Submission status:** Day 8 complete · Production Ready · Public GitHub Ready · VoiceForBharat Ready
 
 ---
 
@@ -377,8 +392,9 @@ Amurf-livekit-starter/
 │   │   └── resources/exercises.json
 │   ├── src/telephony/            # Outbound calling, bootstrap, metrics, flags
 │   ├── src/escalation/           # Human-help escalation, notify, status, callback
+│   ├── src/analytics/            # Call analytics, dashboard metrics, report export
 │   ├── data/                     # Local SQLite db (gitignored *.db)
-│   ├── tests/                    # Day 1–7 + bonus tests (226 passing)
+│   ├── tests/                    # Day 1–8 + bonus tests (261 passing)
 │   ├── .env.example              # Backend env template (placeholders only)
 │   └── pyproject.toml            # Python dependencies (uv)
 ├── frontend/                     # Next.js voice UI
@@ -537,7 +553,7 @@ cd backend
 uv run pytest
 ```
 
-Requires LiveKit credentials for agent evaluation tests. Current suite: **226 tests passing** (Days 1–7 + escalation bonuses).
+Requires LiveKit credentials for agent evaluation tests. Current suite: **261 tests passing** (Days 1–8 + analytics bonuses).
 
 Also useful:
 
@@ -637,7 +653,7 @@ Browser voice sessions and Murf Falcon TTS remain unchanged.
 
 ## Testing
 
-Full backend suite: **226 passed** (`pytest -q`)
+Full backend suite: **261 passed** (`pytest -q`)
 
 ## Day 7 Demo Checklist
 
@@ -653,6 +669,66 @@ Full backend suite: **226 passed** (`pytest -q`)
 10. Callback consent requested
 11. Callback prepared
 12. Hindi/native-script behavior verified
+
+---
+
+# Day 8 — Call Analytics Dashboard
+
+## Core
+
+- Real call analytics
+- Total calls
+- Successful calls
+- Failed calls
+- SQLite-backed call outcomes
+- Privacy-safe dashboard
+
+## Bonus Improvements
+
+- Success and failure rates
+- Failure category analysis
+- Recent call history
+- Date/channel/outcome filters
+- Automatic dashboard refresh
+- Call duration analytics
+- First-response latency
+- Language analytics
+- Channel analytics
+- Deterministic call insights
+- Privacy-safe JSON report export
+- Final production-readiness verification
+
+## Production Readiness
+
+- Real call verification path
+- Structured error handling
+- Privacy protection
+- Read-only analytics APIs
+- Filter-safe reporting
+- Persistent analytics (`analytics.db`)
+- Dashboard failure isolation
+- Safe logging
+
+## Testing
+
+Full backend suite: **261 passed** (`pytest -q`)
+
+## Day 8 Demo Checklist
+
+1. Open analytics dashboard (`/analytics`)
+2. Show baseline metrics
+3. Start real voice call
+4. Complete learning exercise
+5. End call
+6. Dashboard updates
+7. Successful call count increases
+8. Recent call appears
+9. Performance metrics update
+10. Language/channel analytics update
+11. Apply filters
+12. Export analytics report
+13. Verify exported report
+14. Verify no sensitive information is exposed
 
 ---
 

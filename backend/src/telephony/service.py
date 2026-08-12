@@ -56,6 +56,7 @@ class TelephonyService:
         self._metrics.set_enabled(flags.metrics_enabled)
         self._audit = audit_logger or CallAuditLogger(enabled=flags.audit_enabled)
         self._audit.set_enabled(flags.audit_enabled)
+        self._last_analytics_call_id: str | None = None
         logger.info("Telephony service initialized")
 
     @property
@@ -269,6 +270,22 @@ class TelephonyService:
             self._metrics.record_call_start(call_id)
         self._metrics.record_call_success()
 
+        # Day 8: analytics start for outbound telephony (failure-isolated).
+        try:
+            from analytics.integration import start_call_analytics
+
+            start_result = start_call_analytics(
+                call_id=call_id or None,
+                channel="sip",
+                language=str(prepared.get("language") or language or "en-IN"),
+            )
+            analytics_id = start_result.get("call_id")
+            if isinstance(analytics_id, str) and analytics_id:
+                self._last_analytics_call_id = analytics_id
+                result = {**result, "analytics_call_id": analytics_id}
+        except Exception:
+            logger.info("Analytics integration unavailable")
+
         intro = self.build_outbound_intro(
             learner_name=learner_name,
             purpose=str(prepared["purpose"]),
@@ -366,6 +383,14 @@ class TelephonyService:
                     },
                 )
             self._metrics.record_session_completed()
+            # Day 8: successful outbound exercise evaluation → analytics success.
+            try:
+                from analytics.integration import complete_call_analytics
+
+                if self._last_analytics_call_id:
+                    complete_call_analytics(self._last_analytics_call_id, "success")
+            except Exception:
+                logger.info("Analytics integration unavailable")
         return result
 
     def handle_call_outcome(self, provider_status: str) -> dict[str, Any]:
@@ -382,6 +407,26 @@ class TelephonyService:
         )
         if result.get("retry_recommended"):
             self._metrics.record_retry()
+        # Day 8: map failed provider outcomes when an analytics_call_id is present.
+        try:
+            status = str(result.get("status") or "").lower()
+            call_id = result.get("call_id") or result.get("analytics_call_id")
+            if call_id and status in {
+                "busy",
+                "no_answer",
+                "failed",
+                "rejected",
+                "voicemail",
+            }:
+                from analytics.integration import complete_call_analytics
+
+                complete_call_analytics(
+                    str(call_id),
+                    "failed",
+                    failure_type="provider_error",
+                )
+        except Exception:
+            logger.info("Analytics integration unavailable")
         return result
 
     def prepare_resolution_callback(

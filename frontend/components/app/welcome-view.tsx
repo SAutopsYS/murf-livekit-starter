@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/shadcn/utils';
 
@@ -99,6 +100,12 @@ export const WelcomeView = ({
             <p className="text-muted-foreground text-[11px] font-medium tracking-wide sm:text-xs">
               Powered by Murf Falcon
             </p>
+            <Link
+              href="/analytics"
+              className="text-[11px] font-medium tracking-wide text-sky-700 underline-offset-4 hover:underline sm:text-xs dark:text-sky-300"
+            >
+              View Call Analytics
+            </Link>
           </div>
         </div>
 

@@ -22,12 +22,21 @@ from livekit.agents import (
 from livekit.plugins import deepgram, google, murf, noise_cancellation, silero
 from livekit.plugins.turn_detector.multilingual import MultilingualModel
 
+from analytics.repository import get_analytics_repository
+from analytics.tool_hooks import score_spoken_answer as score_spoken_answer_tracked
 from escalation.tools import ESCALATION_TOOLS
 from knowledge.tools import KNOWLEDGE_TOOLS
 from memory.async_lookup import SessionMemoryLookup
 from memory.repository import initialize_database
 from memory.tools import MEMORY_TOOLS
-from tools import LEARNING_TOOLS
+from tools.livekit_tools import get_next_exercise, recommend_next_practice
+
+# Day 8: observe successful scoring for analytics without changing tools package logic.
+LEARNING_TOOLS = [
+    get_next_exercise,
+    score_spoken_answer_tracked,
+    recommend_next_practice,
+]
 
 AGENT_TOOLS = [
     *MEMORY_TOOLS,
@@ -42,6 +51,8 @@ load_dotenv(".env.local")
 
 # Day 4: initialize SQLite memory schema on startup.
 initialize_database()
+# Day 8: initialize analytics schema (separate analytics.db).
+get_analytics_repository().initialize()
 
 # Day 2+: extend labeled sections below. Keep greeting in on_enter only.
 SYSTEM_PROMPT = """
@@ -349,16 +360,48 @@ class Assistant(Agent):
 
         await self.session.generate_reply(instructions=instructions)
 
+        # Day 8: first agent response timestamp for latency analytics.
+        try:
+            from analytics.integration import mark_first_response_analytics
+
+            userdata = (
+                self.session.userdata if isinstance(self.session.userdata, dict) else {}
+            )
+            call_id = userdata.get("analytics_call_id")
+            if call_id:
+                mark_first_response_analytics(str(call_id))
+        except Exception:
+            logger.info("Analytics integration unavailable")
+
     async def on_exit(self) -> None:
         from memory.tools import touch_last_interaction
 
         user_id = self._memory_user_id or self._resolve_user_id()
-        if not user_id or self._last_interaction_touched:
-            return
+        if user_id and not self._last_interaction_touched:
+            updated = touch_last_interaction(user_id)
+            if updated is not None:
+                self._last_interaction_touched = True
 
-        updated = touch_last_interaction(user_id)
-        if updated is not None:
-            self._last_interaction_touched = True
+        # Day 8: complete browser call analytics from explicit exercise flag.
+        try:
+            from analytics.integration import complete_call_analytics
+
+            userdata = (
+                self.session.userdata if isinstance(self.session.userdata, dict) else {}
+            )
+            call_id = userdata.get("analytics_call_id")
+            if not call_id:
+                return
+            if userdata.get("analytics_exercise_completed") is True:
+                complete_call_analytics(str(call_id), "success")
+            else:
+                complete_call_analytics(
+                    str(call_id),
+                    "failed",
+                    failure_type="incomplete_exercise",
+                )
+        except Exception:
+            logger.info("Analytics integration unavailable")
 
 
 server = AgentServer()
@@ -435,6 +478,30 @@ async def my_agent(ctx: JobContext):
     # # Start the avatar and wait for it to join
     # await avatar.start(session, room=ctx.room)
 
+    # Day 8: start analytics for this browser/SIP room session (failure-isolated).
+    analytics_call_id = ctx.room.name or f"room-{ctx.room.sid}"
+    channel = "browser"
+    try:
+        from analytics.integration import start_call_analytics
+
+        # SIP participants use telephony channel label "sip".
+        for participant in ctx.room.remote_participants.values():
+            if participant.kind == rtc.ParticipantKind.PARTICIPANT_KIND_SIP:
+                channel = "sip"
+                break
+        start_result = start_call_analytics(
+            call_id=str(analytics_call_id),
+            channel=channel,
+            language="en-IN",
+        )
+        if isinstance(session.userdata, dict) and start_result.get("error") is not True:
+            session.userdata["analytics_call_id"] = start_result.get(
+                "call_id", analytics_call_id
+            )
+            session.userdata["analytics_exercise_completed"] = False
+    except Exception:
+        logger.info("Analytics integration unavailable")
+
     # Start the session, which initializes the voice pipeline and warms up the models
     await session.start(
         agent=Assistant(),
@@ -456,9 +523,26 @@ async def my_agent(ctx: JobContext):
 
         userdata = session.userdata if isinstance(session.userdata, dict) else {}
         user_id = userdata.get("user_id")
-        if not user_id:
-            return
-        touch_last_interaction(str(user_id))
+        if user_id:
+            touch_last_interaction(str(user_id))
+
+        # Day 8 fallback completion if on_exit did not run.
+        try:
+            from analytics.integration import complete_call_analytics
+
+            call_id = userdata.get("analytics_call_id")
+            if not call_id:
+                return
+            if userdata.get("analytics_exercise_completed") is True:
+                complete_call_analytics(str(call_id), "success")
+            else:
+                complete_call_analytics(
+                    str(call_id),
+                    "failed",
+                    failure_type="incomplete_exercise",
+                )
+        except Exception:
+            logger.info("Analytics integration unavailable")
 
     ctx.add_shutdown_callback(_touch_last_interaction_on_shutdown)
 
