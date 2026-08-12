@@ -29,9 +29,26 @@ def _purpose_label_hi(purpose: str) -> str:
         "daily_practice": "रोजाना अंग्रेज़ी बोलने का अभ्यास",
         "speaking_practice": "अंग्रेज़ी बोलने का अभ्यास",
         "exercise": "अभ्यास गतिविधि",
+        "escalation_resolution": "हल हो चुके सहायता अनुरोध",
     }
     key = purpose.strip().lower()
     return mapping.get(key, "अंग्रेज़ी बोलने का अभ्यास")
+
+
+def _resolution_intro(language: str) -> str:
+    """Bootstrap intro for resolved human-help callback calls."""
+    if _is_hindi(language):
+        return (
+            "नमस्ते! मैं VoiceForBharat Tutor बोल रहा हूँ। "
+            "यह कॉल आपके हल हो चुके सहायता अनुरोध के बारे में है। "
+            "मैं आपको समाधान के बारे में बताने के लिए कॉल कर रहा हूँ। "
+            f"{_STOP_HI}"
+        )
+    return (
+        "Hello, this is VoiceForBharat Tutor calling about your resolved "
+        "support request. I'm calling to let you know about the resolution. "
+        "If you do not wish to receive future calls, please tell me to stop."
+    )
 
 
 class ConversationBootstrap:
@@ -54,8 +71,11 @@ class ConversationBootstrap:
 
         hindi = _is_hindi(language)
         name = learner_name.strip() if isinstance(learner_name, str) else ""
+        purpose_key = purpose.strip().lower()
 
-        if hindi:
+        if purpose_key == "escalation_resolution":
+            intro = _resolution_intro(language)
+        elif hindi:
             greeting = f"नमस्ते{(' ' + name) if name else ''}!"
             body = (
                 f"मैं VoiceForBharat Tutor बोल रहा हूँ। "
@@ -64,7 +84,7 @@ class ConversationBootstrap:
             )
             intro = f"{greeting} {body}"
         else:
-            if purpose.strip().lower() == "daily_practice":
+            if purpose_key == "daily_practice":
                 reason = "your daily English speaking practice"
             else:
                 reason = f"your {_purpose_label_en(purpose)}"

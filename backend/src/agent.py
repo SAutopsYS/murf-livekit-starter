@@ -16,20 +16,25 @@ from livekit.agents import (
     JobContext,
     JobProcess,
     cli,
-    inference,
-    tokenize,
     room_io,
+    tokenize,
 )
-from livekit.plugins import murf, silero, google, deepgram, noise_cancellation
+from livekit.plugins import deepgram, google, murf, noise_cancellation, silero
 from livekit.plugins.turn_detector.multilingual import MultilingualModel
 
+from escalation.tools import ESCALATION_TOOLS
 from knowledge.tools import KNOWLEDGE_TOOLS
 from memory.async_lookup import SessionMemoryLookup
 from memory.repository import initialize_database
 from memory.tools import MEMORY_TOOLS
 from tools import LEARNING_TOOLS
 
-AGENT_TOOLS = [*MEMORY_TOOLS, *KNOWLEDGE_TOOLS, *LEARNING_TOOLS]
+AGENT_TOOLS = [
+    *MEMORY_TOOLS,
+    *KNOWLEDGE_TOOLS,
+    *LEARNING_TOOLS,
+    *ESCALATION_TOOLS,
+]
 
 logger = logging.getLogger("agent")
 
@@ -214,6 +219,67 @@ TOPIC PRACTICE
 When a learner requests practice on a specific topic, use the exercise lookup tool with both the learner's level and the requested topic.
 If no exercise exists for that topic, continue with a suitable exercise for the learner's level.
 Never expose tool names or internal errors.
+
+HUMAN HELP
+When the learner is clearly upset and asks for human assistance, or explicitly requests help from a teacher:
+1. Acknowledge the learner.
+2. Explain that a human teacher can help.
+3. Ask permission before sharing a short summary.
+4. Only after permission is given, use the human-help escalation tool.
+5. If permission is denied, do not create an escalation.
+6. After successful escalation, provide the reference ID and explain the next step honestly.
+7. Never promise an immediate human response unless the system actually guarantees one.
+8. Never expose tool names or internal JSON.
+Do not trigger escalation for normal questions or ordinary frustration that does not involve a request for human help.
+After creating a human-help request:
+- Give the learner the reference ID.
+- Explain the next step honestly.
+- If human notification was delivered, say that the request was sent to the human-help channel.
+- If notification delivery is unavailable, do not claim that a human has been notified.
+- Never expose internal tool names or technical errors.
+Only share necessary information with the human helper.
+
+### HUMAN HELP — URGENCY
+When creating a human-help request:
+- Assign the appropriate urgency level.
+- Use low, medium, high, or emergency.
+- Do not exaggerate urgency.
+- Do not invent emergencies.
+- Give the learner the escalation reference ID.
+- Explain the next step honestly.
+- Never expose internal tool names or JSON.
+
+### DUPLICATE HUMAN HELP REQUESTS
+If a human-help request is already open for the same issue:
+- do not create another request
+- use the existing reference ID
+- explain that the request is already open
+- do not expose internal implementation details
+If urgency has increased, continue naturally without mentioning technical deduplication.
+
+### HUMAN HELP STATUS
+If the learner asks about an existing human-help request:
+- use its reference ID
+- report the current status naturally
+- explain the next step honestly
+- never invent a status
+- never promise an immediate human response
+Status meanings:
+open → the request is waiting for human review
+in_progress → human review is underway
+resolved → the issue has been resolved
+Do not expose internal JSON or implementation details.
+
+### RESOLUTION CALLBACK
+When a human-help request has been resolved:
+- Tell the learner that the issue has been resolved.
+- Ask whether they want a callback.
+- Explain that a callback will only be made with explicit permission.
+- If the learner agrees, prepare the resolution callback.
+- Never assume consent.
+- Never expose phone numbers or internal tool details.
+- Never promise an immediate callback unless the call has actually been placed.
+If the learner says no, do not prepare a callback.
 """.strip()
 
 GREETING_INSTRUCTIONS = (

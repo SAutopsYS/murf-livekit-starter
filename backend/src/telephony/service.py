@@ -384,6 +384,23 @@ class TelephonyService:
             self._metrics.record_retry()
         return result
 
+    def prepare_resolution_callback(
+        self,
+        reference_id: str,
+        callback_consent: bool,
+        phone_number: str,
+        language: str = "en-IN",
+    ) -> dict[str, Any]:
+        """Delegate resolution-callback eligibility to EscalationCallbackManager."""
+        from escalation.callback import EscalationCallbackManager
+
+        return EscalationCallbackManager(telephony=self).prepare_resolution_callback(
+            reference_id=reference_id,
+            callback_consent=callback_consent,
+            phone_number=phone_number,
+            language=language,
+        )
+
 
 _default_service: TelephonyService | None = None
 

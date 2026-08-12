@@ -4,8 +4,8 @@ A multilingual AI Voice Learning Tutor built with LiveKit, Murf Falcon, Deepgram
 
 [![VoiceForBharat 2026](https://img.shields.io/badge/VoiceForBharat-2026-0EA5E9)](https://murf.ai/)
 [![Learning & Literacy Track](https://img.shields.io/badge/Track-Learning%20%26%20Literacy-22C55E)](https://murf.ai/)
-[![Day 6 Completed](https://img.shields.io/badge/Day%206-Completed-10B981)](https://murf.ai/)
-[![163 Tests Passing](https://img.shields.io/badge/Tests-163%20Passing-22C55E)](./backend/tests)
+[![Day 7 Completed](https://img.shields.io/badge/Day%207-Completed-10B981)](https://murf.ai/)
+[![226 Tests Passing](https://img.shields.io/badge/Tests-226%20Passing-22C55E)](./backend/tests)
 [![Production Ready](https://img.shields.io/badge/Status-Production%20Ready-0EA5E9)](#)
 [![Public GitHub Ready](https://img.shields.io/badge/GitHub-Ready-111827)](#)
 [![VoiceForBharat Ready](https://img.shields.io/badge/VoiceForBharat-Ready-F59E0B)](https://murf.ai/)
@@ -17,9 +17,9 @@ A multilingual AI Voice Learning Tutor built with LiveKit, Murf Falcon, Deepgram
 
 **Built by:** Saloni Saini  
 **Track:** Learning & Literacy  
-**Day 6:** Outbound Calling & Telephony (Days 1–5 complete)  
+**Day 7:** Human Help & Intelligent Escalation (Days 1–6 complete)  
 **Powered by:** Murf Falcon  
-**Status:** Production Ready · Public GitHub Ready · VoiceForBharat Ready · **163 tests passing**
+**Status:** Production Ready · Public GitHub Ready · VoiceForBharat Ready · **226 tests passing**
 
 ---
 
@@ -55,6 +55,10 @@ Added **Learning & Literacy external tools** with intelligent chaining: exercise
 
 Added **outbound telephony** for the Learning Tutor: typed telephony configuration, call preparation and LiveKit SIP outbound placement, deterministic conversation bootstrap (English + Hindi Devanagari), daily-practice coordinator reusing Day 5 memory/exercise tools, outbound speaking evaluation with recommendations, and structured call-outcome handling — without changing the browser voice pipeline or frontend.
 
+### Day 7 (completed)
+
+Added **human-help escalation** for the Learning Tutor: consent-first escalation requests, reference IDs, Discord/webhook human notification with graceful failure, urgency levels, PII sanitization, duplicate detection, status tracking (`open` → `in_progress` → `resolved`), and optional outbound resolution callbacks that reuse Day 6 `TelephonyService` — without changing the browser voice pipeline, memory, knowledge, or database schema.
+
 ---
 
 ## Project overview
@@ -73,7 +77,7 @@ User speaks → Deepgram STT → Google Gemini → Murf Falcon TTS → LiveKit �
 
 LiveKit carries the audio session. The Python backend runs the agent worker. The Next.js frontend provides the talk UI.
 
-Day 1 delivered a working conversational baseline. Day 2 specializes that baseline into a Learning & Literacy tutor. Day 3 turns the frontend into a complete product-style practice experience. Day 4 adds persistent memory, privacy controls, and a function-based learning knowledge base. Day 5 adds external learning tools, provider failover, and intelligent tool chaining. Day 6 adds outbound telephony so the tutor can call learners for daily speaking practice.
+Day 1 delivered a working conversational baseline. Day 2 specializes that baseline into a Learning & Literacy tutor. Day 3 turns the frontend into a complete product-style practice experience. Day 4 adds persistent memory, privacy controls, and a function-based learning knowledge base. Day 5 adds external learning tools, provider failover, and intelligent tool chaining. Day 6 adds outbound telephony so the tutor can call learners for daily speaking practice. Day 7 adds consent-first human-help escalation with safe notification delivery and optional resolution callbacks.
 
 ---
 
@@ -134,6 +138,15 @@ Day 1 delivered a working conversational baseline. Day 2 specializes that baseli
 - ✅ Telephony Metrics & Diagnostics
 - ✅ Runtime Feature Flags
 - ✅ Production Readiness Report
+- ✅ Human-Help Escalation
+- ✅ Consent-First Escalation
+- ✅ Discord / Webhook Notification
+- ✅ Escalation Reference IDs
+- ✅ Urgency Levels
+- ✅ PII / Sensitive-Data Sanitization
+- ✅ Duplicate Escalation Detection
+- ✅ Escalation Status Tracking
+- ✅ Resolution Callback Preparation
 
 ### Core capabilities
 
@@ -153,6 +166,9 @@ Day 1 delivered a working conversational baseline. Day 2 specializes that baseli
 | **Daily Practice Coordinator** | Memory lookup → exercise preparation |
 | **Speaking Evaluation** | Score → recommend → optional follow-up exercise |
 | **Call Outcome Handling** | Answered / busy / no-answer / voicemail / rejected / failed |
+| **Human-Help Escalation** | Consent-first requests with reference IDs + webhook notify |
+| **Escalation Safety** | Urgency, PII sanitization, duplicate detection, status tracking |
+| **Resolution Callback** | Explicit-consent prepare path reusing Day 6 telephony |
 
 ### Day 1 baseline
 
@@ -319,10 +335,11 @@ Also used: Silero VAD, LiveKit turn detection, `pnpm` (Node).
 | Day 2 | ✅ Completed | AI Learning Tutor |
 | Day 3 | ✅ Completed | Premium Frontend Experience |
 | Day 4 | ✅ Completed | Persistent Memory & Knowledge |
-| Day 5 | ✅ Completed | External Tools & Intelligent Tool Chaining |
+| Day 5 | ✅ Completed | External Learning Tools & Intelligent Tool Chaining |
 | Day 6 | ✅ Completed | Outbound Calling & Telephony |
+| Day 7 | ✅ Completed | Human Help & Intelligent Escalation |
 
-**Submission status:** Day 6 complete · Production Ready · Public GitHub Ready · VoiceForBharat Ready
+**Submission status:** Day 7 complete · Production Ready · Public GitHub Ready · VoiceForBharat Ready
 
 ---
 
@@ -359,8 +376,9 @@ Amurf-livekit-starter/
 │   ├── src/tools/                # Learning tools, provider, registry, manager
 │   │   └── resources/exercises.json
 │   ├── src/telephony/            # Outbound calling, bootstrap, metrics, flags
+│   ├── src/escalation/           # Human-help escalation, notify, status, callback
 │   ├── data/                     # Local SQLite db (gitignored *.db)
-│   ├── tests/                    # Day 1–6 + bonus tests (163 passing)
+│   ├── tests/                    # Day 1–7 + bonus tests (226 passing)
 │   ├── .env.example              # Backend env template (placeholders only)
 │   └── pyproject.toml            # Python dependencies (uv)
 ├── frontend/                     # Next.js voice UI
@@ -441,6 +459,12 @@ cp frontend/.env.example frontend/.env.local
 
 Optional Day 5 exercise provider: `EXERCISE_SOURCE`, `EXERCISE_API_URL`, and related timeout/retry vars (see `.env.example`).
 
+**Optional human-help webhook (Day 7)** — placeholder in `backend/.env.example`:
+
+| Variable | Notes |
+| -------- | ----- |
+| `ESCALATION_WEBHOOK_URL` | Discord (or compatible) webhook for human-help notifications; leave empty for local use |
+
 ### 3. Install backend dependencies
 
 ```bash
@@ -513,7 +537,7 @@ cd backend
 uv run pytest
 ```
 
-Requires LiveKit credentials for agent evaluation tests. Current suite: **163 tests passing** (Days 1–6 + telephony bonuses).
+Requires LiveKit credentials for agent evaluation tests. Current suite: **226 tests passing** (Days 1–7 + escalation bonuses).
 
 Also useful:
 
@@ -574,6 +598,61 @@ Browser voice sessions and Murf Falcon TTS remain unchanged.
 5. **Spoken answer evaluation** — score → recommendation → follow-up exercise  
 6. **Call outcome handling** — answered/busy/no-answer/voicemail/rejected/failed  
 7. **LiveKit failure fallback** — structured `Unable to place outbound call.` (no stack traces)  
+
+---
+
+# Day 7 — Human Help & Escalation
+
+## Core
+
+- Human-help escalation
+- Consent-first escalation
+- Reference IDs
+- Real human-help notification
+- Graceful notification failure
+
+## Bonus Improvements
+
+- Urgency levels
+- PII / sensitive-data sanitization
+- Duplicate escalation detection
+- Escalation status tracking
+- Outbound callback after resolution
+
+## Safety
+
+- Explicit consent before escalation
+- Explicit callback consent
+- No automatic callbacks
+- Sensitive information removed before notification
+- No secrets or transcripts exposed
+
+## Production Readiness
+
+- Structured errors
+- Deterministic status transitions
+- Safe logging
+- Existing Day 6 telephony reused
+- Existing LiveKit tool architecture preserved
+
+## Testing
+
+Full backend suite: **226 passed** (`pytest -q`)
+
+## Day 7 Demo Checklist
+
+1. Normal conversation — no escalation
+2. Learner requests teacher help
+3. Consent prompt
+4. Escalation created
+5. Reference ID shown
+6. Human notification shown
+7. Duplicate request handled
+8. Escalation status updated
+9. Escalation resolved
+10. Callback consent requested
+11. Callback prepared
+12. Hindi/native-script behavior verified
 
 ---
 
