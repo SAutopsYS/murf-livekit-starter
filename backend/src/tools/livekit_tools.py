@@ -1,7 +1,7 @@
 """LiveKit function tools for Learning & Literacy exercises and scoring.
 
 Wrappers call the existing deterministic implementations. No duplicated logic.
-Structured data only — never conversational text.
+Structured data only. Never conversational text.
 """
 
 from __future__ import annotations

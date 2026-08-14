@@ -49,23 +49,23 @@ Added **persistent SQLite memory**, consent-first storage, returning learner rec
 
 ### Day 5 (completed)
 
-Added **Learning & Literacy external tools** with intelligent chaining: exercise lookup (local JSON + optional HTTP provider), rule-based spoken-answer scoring, adaptive follow-up recommendations, topic-aware practice, provider failover/retry/cooldown, session rotation, request cache, validation, tool registry, tool manager, and performance metrics — all via LiveKit function tools without changing the voice pipeline.
+Added **Learning & Literacy external tools** with intelligent chaining: exercise lookup (local JSON + optional HTTP provider), rule-based spoken-answer scoring, adaptive follow-up recommendations, topic-aware practice, provider failover/retry/cooldown, session rotation, request cache, validation, tool registry, tool manager, and performance metrics: all via LiveKit function tools without changing the voice pipeline.
 
 ### Day 6 (completed)
 
-Added **outbound telephony** for the Learning Tutor: typed telephony configuration, call preparation and LiveKit SIP outbound placement, deterministic conversation bootstrap (English + Hindi Devanagari), daily-practice coordinator reusing Day 5 memory/exercise tools, outbound speaking evaluation with recommendations, and structured call-outcome handling — without changing the browser voice pipeline or frontend.
+Added **outbound telephony** for the Learning Tutor: typed telephony configuration, call preparation and LiveKit SIP outbound placement, deterministic conversation bootstrap (English + Hindi Devanagari), daily-practice coordinator reusing Day 5 memory/exercise tools, outbound speaking evaluation with recommendations, and structured call-outcome handling: without changing the browser voice pipeline or frontend.
 
 ### Day 7 (completed)
 
-Added **human-help escalation** for the Learning Tutor: consent-first escalation requests, reference IDs, Discord/webhook human notification with graceful failure, urgency levels, PII sanitization, duplicate detection, status tracking (`open` → `in_progress` → `resolved`), and optional outbound resolution callbacks that reuse Day 6 `TelephonyService` — without changing the browser voice pipeline, memory, knowledge, or database schema.
+Added **human-help escalation** for the Learning Tutor: consent-first escalation requests, reference IDs, Discord/webhook human notification with graceful failure, urgency levels, PII sanitization, duplicate detection, status tracking (`open` → `in_progress` → `resolved`), and optional outbound resolution callbacks that reuse Day 6 `TelephonyService`: without changing the browser voice pipeline, memory, knowledge, or database schema.
 
 ### Day 8 (completed)
 
-Added a **Call Analytics Dashboard** backed by real call outcomes: total / successful / failed calls, success & failure rates, recent history, filters, auto-refresh, performance latency, language/channel breakdown, deterministic insights, and privacy-safe JSON export — using a separate analytics SQLite store without changing memory schema or the voice pipeline.
+Added a **Call Analytics Dashboard** backed by real call outcomes: total / successful / failed calls, success & failure rates, recent history, filters, auto-refresh, performance latency, language/channel breakdown, deterministic insights, and privacy-safe JSON export: using a separate analytics SQLite store without changing memory schema or the voice pipeline.
 
 ### Day 9 (completed)
 
-Added a **multi-agent specialist architecture** on the existing LiveKit session: the Main Tutor stays default; a Math Practice Specialist handles mathematics only. Includes intelligent handoff/handback, a deterministic specialist router and registry, shared conversation context, read-only memory for the specialist, confidence-based routing with clarification, one-retry fault-tolerant recovery, and specialist analytics on the existing dashboard — without a second voice pipeline or Murf Falcon copy.
+Added a **multi-agent specialist architecture** on the existing LiveKit session: the Main Tutor stays default; a Math Practice Specialist handles mathematics only. Includes intelligent handoff/handback, a deterministic specialist router and registry, shared conversation context, read-only memory for the specialist, confidence-based routing with clarification, one-retry fault-tolerant recovery, and specialist analytics on the existing dashboard: without a second voice pipeline or Murf Falcon copy.
 
 ---
 
@@ -253,7 +253,7 @@ Day 1 delivered a working conversational baseline. Day 2 specializes that baseli
 #### Learning Tools
 
 - **Exercise Lookup Tool** (`get_next_exercise`) with optional topic filter
-- **Rule-Based Scoring** (`score_spoken_answer`) — deterministic, no LLM scoring
+- **Rule-Based Scoring** (`score_spoken_answer`): deterministic, no LLM scoring
 - **Adaptive Practice Recommendation** (`recommend_next_practice`)
 - **LiveKit Function Tools** registered beside memory and knowledge tools
 
@@ -285,13 +285,13 @@ Day 1 delivered a working conversational baseline. Day 2 specializes that baseli
 
 #### Outbound Telephony
 
-- **Telephony Configuration** — cached LiveKit/Twilio/SIP settings
-- **Outbound Call Service** — prepare and place structured outbound calls
-- **LiveKit Telephony Integration** — SIP participant outbound dialing
-- **Conversation Bootstrap** — deterministic intro with stop instruction
-- **Daily Practice Coordinator** — memory lookup → exercise preparation
-- **Outbound Learning Session** — score → recommend → optional follow-up
-- **Call Outcome Handling** — answered/busy/no-answer/voicemail/rejected/failed
+- **Telephony Configuration**: cached LiveKit/Twilio/SIP settings
+- **Outbound Call Service**: prepare and place structured outbound calls
+- **LiveKit Telephony Integration**: SIP participant outbound dialing
+- **Conversation Bootstrap**: deterministic intro with stop instruction
+- **Daily Practice Coordinator**: memory lookup → exercise preparation
+- **Outbound Learning Session**: score → recommend → optional follow-up
+- **Call Outcome Handling**: answered/busy/no-answer/voicemail/rejected/failed
 
 #### Production Improvements
 
@@ -305,16 +305,16 @@ Day 1 delivered a working conversational baseline. Day 2 specializes that baseli
 
 #### Bonus Features
 
-- **Telephony Metrics** — in-memory operational counters
-- **Operational Counters** — calls, bootstrap, learning, evaluation, outcomes
-- **In-memory Metrics Snapshot** — `get_metrics()` / health metrics block
-- **Lightweight Observability** — audit lifecycle events (no persistence)
-- **Outbound Call Audit Logger** — structured `Audit event:` logs
-- **Runtime Feature Flags** — telephony / outbound / bootstrap / learning / evaluation / metrics / audit / diagnostics toggles
-- **Production Readiness** — end-to-end readiness verification
-- **Aggregated health report** — configuration, provider, metrics, feature flags
-- **Safe operational checks** — no secrets or SDK objects exposed
-- **Structured production summary** — `generate_readiness_report()`
+- **Telephony Metrics**: in-memory operational counters
+- **Operational Counters**: calls, bootstrap, learning, evaluation, outcomes
+- **In-memory Metrics Snapshot**: `get_metrics()` / health metrics block
+- **Lightweight Observability**: audit lifecycle events (no persistence)
+- **Outbound Call Audit Logger**: structured `Audit event:` logs
+- **Runtime Feature Flags**: telephony / outbound / bootstrap / learning / evaluation / metrics / audit / diagnostics toggles
+- **Production Readiness**: end-to-end readiness verification
+- **Aggregated health report**: configuration, provider, metrics, feature flags
+- **Safe operational checks**: no secrets or SDK objects exposed
+- **Structured production summary**: `generate_readiness_report()`
 
 #### Production Diagnostics
 
@@ -469,7 +469,7 @@ cp frontend/.env.example frontend/.env.local
 | `LIVEKIT_API_SECRET` | Same as backend |
 | `AGENT_NAME` | Set to `my-agent` (matches the backend agent name) |
 
-**Optional backend telephony (Day 6)** — placeholders in `backend/.env.example`:
+**Optional backend telephony (Day 6)**: placeholders in `backend/.env.example`:
 
 | Variable | Notes |
 | -------- | ----- |
@@ -481,7 +481,7 @@ cp frontend/.env.example frontend/.env.local
 
 Optional Day 5 exercise provider: `EXERCISE_SOURCE`, `EXERCISE_API_URL`, and related timeout/retry vars (see `.env.example`).
 
-**Optional human-help webhook (Day 7)** — placeholder in `backend/.env.example`:
+**Optional human-help webhook (Day 7)**: placeholder in `backend/.env.example`:
 
 | Variable | Notes |
 | -------- | ----- |
@@ -601,29 +601,30 @@ Browser voice sessions and Murf Falcon TTS remain unchanged.
 
 ## Day 5 demo checklist
 
-1. **New learner** — consent → memory saved  
-2. **Returning learner** — personalized greeting + saved level reused  
-3. **"Give me an exercise."** — exercise tool fires naturally  
-4. **Spoken answer scoring** — score → recommendation → follow-up exercise  
-5. **Knowledge lookup** — grammar / pronunciation / vocabulary tip  
-6. **Forget Me** — profile removed; restart shows no learner  
-7. **API failure** — `EXERCISE_SOURCE=api` with forced failure → local fallback, no interruption  
+1. **New learner**: consent → memory saved  
+2. **Returning learner**: personalized greeting + saved level reused  
+3. **"Give me an exercise."**: exercise tool fires naturally  
+4. **Spoken answer scoring**: score → recommendation → follow-up exercise  
+5. **Knowledge lookup**: grammar / pronunciation / vocabulary tip  
+6. **Forget Me**: profile removed; restart shows no learner  
+7. **API failure**: `EXERCISE_SOURCE=api` with forced failure → local fallback, no interruption  
 
 ---
 
 ## Day 6 demo checklist
 
-1. **Telephony health** — configuration loads, service reports ready  
-2. **Outbound call initiated** — prepare → LiveKit dial → structured `calling` response  
-3. **Bootstrap introduction** — identity + reason + stop instruction (EN / Hindi Devanagari)  
-4. **Daily practice exercise** — lookup level → `get_next_exercise` → ready state  
-5. **Spoken answer evaluation** — score → recommendation → follow-up exercise  
-6. **Call outcome handling** — answered/busy/no-answer/voicemail/rejected/failed  
-7. **LiveKit failure fallback** — structured `Unable to place outbound call.` (no stack traces)  
+1. **Telephony health**: configuration loads, service reports ready  
+2. **Outbound call initiated**: prepare → LiveKit dial → structured `calling` response  
+3. **Bootstrap introduction**: identity + reason + stop instruction (EN / Hindi Devanagari)  
+4. **Daily practice exercise**: lookup level → `get_next_exercise` → ready state  
+5. **Spoken answer evaluation**: score → recommendation → follow-up exercise  
+6. **Call outcome handling**: answered/busy/no-answer/voicemail/rejected/failed  
+7. **LiveKit failure fallback**: structured `Unable to place outbound call.` (no stack traces)  
 
 ---
 
-# Day 7 — Human Help & Escalation
+# Day 7
+## Human Help and Escalation
 
 ## Core
 
@@ -663,7 +664,7 @@ Full backend suite: **405 passed** (`pytest -q`)
 
 ## Day 7 Demo Checklist
 
-1. Normal conversation — no escalation
+1. Normal conversation: no escalation
 2. Learner requests teacher help
 3. Consent prompt
 4. Escalation created
@@ -678,7 +679,8 @@ Full backend suite: **405 passed** (`pytest -q`)
 
 ---
 
-# Day 8 — Call Analytics Dashboard
+# Day 8
+## Call Analytics Dashboard
 
 ## Core
 
@@ -738,7 +740,8 @@ Full backend suite: **405 passed** (`pytest -q`)
 
 ---
 
-# Day 9 — Multi-Agent Specialist Architecture
+# Day 9
+## Multi-Agent Specialist Architecture
 
 ## Core
 
@@ -789,7 +792,8 @@ Full backend suite: **405 passed** (`pytest -q`)
 
 ---
 
-# Day 9 — Enterprise Control Plane
+# Day 9
+## Enterprise Control Plane
 
 The existing multi-agent system now includes an enterprise control plane on top of the Day 9 specialists. It reuses the specialist router, memory repository, analytics store, and learning tools. No second voice pipeline.
 
