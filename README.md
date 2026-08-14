@@ -4,8 +4,8 @@ A multilingual AI Voice Learning Tutor built with LiveKit, Murf Falcon, Deepgram
 
 [![VoiceForBharat 2026](https://img.shields.io/badge/VoiceForBharat-2026-0EA5E9)](https://murf.ai/)
 [![Learning & Literacy Track](https://img.shields.io/badge/Track-Learning%20%26%20Literacy-22C55E)](https://murf.ai/)
-[![Day 8 Completed](https://img.shields.io/badge/Day%208-Completed-10B981)](https://murf.ai/)
-[![261 Tests Passing](https://img.shields.io/badge/Tests-261%20Passing-22C55E)](./backend/tests)
+[![Day 9 Completed](https://img.shields.io/badge/Day%209-Completed-10B981)](https://murf.ai/)
+[![405 Tests Passing](https://img.shields.io/badge/Tests-405%20Passing-22C55E)](./backend/tests)
 [![Production Ready](https://img.shields.io/badge/Status-Production%20Ready-0EA5E9)](#)
 [![Public GitHub Ready](https://img.shields.io/badge/GitHub-Ready-111827)](#)
 [![VoiceForBharat Ready](https://img.shields.io/badge/VoiceForBharat-Ready-F59E0B)](https://murf.ai/)
@@ -17,9 +17,9 @@ A multilingual AI Voice Learning Tutor built with LiveKit, Murf Falcon, Deepgram
 
 **Built by:** Saloni Saini  
 **Track:** Learning & Literacy  
-**Day 8:** Call Analytics Dashboard (Days 1–7 complete)  
+**Day 9:** Multi-Agent Specialist Architecture (Days 1–8 complete)  
 **Powered by:** Murf Falcon  
-**Status:** Production Ready · Public GitHub Ready · VoiceForBharat Ready · **261 tests passing**
+**Status:** Production Ready · Public GitHub Ready · VoiceForBharat Ready · **405 tests passing**
 
 ---
 
@@ -63,6 +63,10 @@ Added **human-help escalation** for the Learning Tutor: consent-first escalation
 
 Added a **Call Analytics Dashboard** backed by real call outcomes: total / successful / failed calls, success & failure rates, recent history, filters, auto-refresh, performance latency, language/channel breakdown, deterministic insights, and privacy-safe JSON export — using a separate analytics SQLite store without changing memory schema or the voice pipeline.
 
+### Day 9 (completed)
+
+Added a **multi-agent specialist architecture** on the existing LiveKit session: the Main Tutor stays default; a Math Practice Specialist handles mathematics only. Includes intelligent handoff/handback, a deterministic specialist router and registry, shared conversation context, read-only memory for the specialist, confidence-based routing with clarification, one-retry fault-tolerant recovery, and specialist analytics on the existing dashboard — without a second voice pipeline or Murf Falcon copy.
+
 ---
 
 ## Project overview
@@ -81,7 +85,7 @@ User speaks → Deepgram STT → Google Gemini → Murf Falcon TTS → LiveKit �
 
 LiveKit carries the audio session. The Python backend runs the agent worker. The Next.js frontend provides the talk UI.
 
-Day 1 delivered a working conversational baseline. Day 2 specializes that baseline into a Learning & Literacy tutor. Day 3 turns the frontend into a complete product-style practice experience. Day 4 adds persistent memory, privacy controls, and a function-based learning knowledge base. Day 5 adds external learning tools, provider failover, and intelligent tool chaining. Day 6 adds outbound telephony so the tutor can call learners for daily speaking practice. Day 7 adds consent-first human-help escalation with safe notification delivery and optional resolution callbacks. Day 8 adds privacy-safe call analytics and a dashboard fed by real call outcomes.
+Day 1 delivered a working conversational baseline. Day 2 specializes that baseline into a Learning & Literacy tutor. Day 3 turns the frontend into a complete product-style practice experience. Day 4 adds persistent memory, privacy controls, and a function-based learning knowledge base. Day 5 adds external learning tools, provider failover, and intelligent tool chaining. Day 6 adds outbound telephony so the tutor can call learners for daily speaking practice. Day 7 adds consent-first human-help escalation with safe notification delivery and optional resolution callbacks. Day 8 adds privacy-safe call analytics and a dashboard fed by real call outcomes. Day 9 adds a Math Practice Specialist with router, registry, shared context, recovery, and specialist analytics.
 
 ---
 
@@ -353,8 +357,9 @@ Also used: Silero VAD, LiveKit turn detection, `pnpm` (Node).
 | Day 6 | ✅ Completed | Outbound Calling & Telephony |
 | Day 7 | ✅ Completed | Human Help & Intelligent Escalation |
 | Day 8 | ✅ Completed | Call Analytics Dashboard |
+| Day 9 | ✅ Completed | Multi-Agent Specialist Architecture |
 
-**Submission status:** Day 8 complete · Production Ready · Public GitHub Ready · VoiceForBharat Ready
+**Submission status:** Day 9 complete · Production Ready · Public GitHub Ready · VoiceForBharat Ready
 
 ---
 
@@ -393,8 +398,9 @@ Amurf-livekit-starter/
 │   ├── src/telephony/            # Outbound calling, bootstrap, metrics, flags
 │   ├── src/escalation/           # Human-help escalation, notify, status, callback
 │   ├── src/analytics/            # Call analytics, dashboard metrics, report export
+│   ├── src/specialists/          # Math specialist, router, registry, shared context
 │   ├── data/                     # Local SQLite db (gitignored *.db)
-│   ├── tests/                    # Day 1–8 + bonus tests (261 passing)
+│   ├── tests/                    # Day 1–9 + bonus tests (405 passing)
 │   ├── .env.example              # Backend env template (placeholders only)
 │   └── pyproject.toml            # Python dependencies (uv)
 ├── frontend/                     # Next.js voice UI
@@ -553,7 +559,7 @@ cd backend
 uv run pytest
 ```
 
-Requires LiveKit credentials for agent evaluation tests. Current suite: **261 tests passing** (Days 1–8 + analytics bonuses).
+Requires LiveKit credentials for agent evaluation tests. Current suite: **405 tests passing** (Days 1–9 + specialist bonuses).
 
 Also useful:
 
@@ -653,7 +659,7 @@ Browser voice sessions and Murf Falcon TTS remain unchanged.
 
 ## Testing
 
-Full backend suite: **261 passed** (`pytest -q`)
+Full backend suite: **405 passed** (`pytest -q`)
 
 ## Day 7 Demo Checklist
 
@@ -711,7 +717,7 @@ Full backend suite: **261 passed** (`pytest -q`)
 
 ## Testing
 
-Full backend suite: **261 passed** (`pytest -q`)
+Full backend suite: **405 passed** (`pytest -q`)
 
 ## Day 8 Demo Checklist
 
@@ -729,6 +735,76 @@ Full backend suite: **261 passed** (`pytest -q`)
 12. Export analytics report
 13. Verify exported report
 14. Verify no sensitive information is exposed
+
+---
+
+# Day 9 — Multi-Agent Specialist Architecture
+
+## Core
+
+- Main Tutor (default agent)
+- Math Practice Specialist
+- Intelligent Handoff
+- Intelligent Handback
+- Specialist Router
+- Specialist Registry
+- Shared conversation context
+- Read-only specialist memory
+
+## Bonus Improvements
+
+- Intent detection (deterministic, no LLM routing)
+- Confidence scoring and clarification
+- Fault-tolerant recovery (one retry, Main Tutor fallback)
+- Shared context / conversation state
+- Incremental progress and recommendation sync
+- Specialist analytics on the existing dashboard
+- Enterprise test suite
+- Production hardening
+
+## Production Readiness
+
+- Same LiveKit session and Murf Falcon voice
+- No second voice pipeline
+- Structured errors only
+- Privacy-safe specialist logs
+- Disabled specialist placeholders never route
+- Safe fallback to Main Tutor
+
+## Testing
+
+Full backend suite: **405 passed** (`pytest -q`)
+
+## Day 9 Demo Checklist
+
+1. Browser voice conversation
+2. General question stays with Main Tutor
+3. Math question hands off
+4. Specialist introduction
+5. Solve a math exercise
+6. Handback to Main Tutor
+7. Main Tutor resumes naturally
+8. Analytics dashboard still works
+9. No greeting restart or reconnect
+
+---
+
+# Day 9 — Enterprise Control Plane
+
+The existing multi-agent system now includes an enterprise control plane on top of the Day 9 specialists. It reuses the specialist router, memory repository, analytics store, and learning tools. No second voice pipeline.
+
+- Agent orchestrator with confidence, fallback, and decision metadata
+- Live agent graph, timeline, and decision viewer
+- Read-only memory graph
+- Learning journey, adaptive difficulty, and knowledge heatmap
+- AI performance dashboard and live health monitor
+- Execution trace, session replay metadata, and voice analytics
+- Privacy-safe learning reports (JSON / PDF)
+- Parent dashboard and teacher console
+- Gamification derived from real progress
+- Multi-language routing metadata (native scripts, existing Murf voice)
+- Production monitoring and AI Control Center (`/enterprise`)
+- Command palette, global search, and notification history
 
 ---
 

@@ -26,6 +26,21 @@ class DashboardAnalytics:
     def get_summary(self, filters: AnalyticsFilter | None = None) -> dict[str, Any]:
         summary = self._service.get_filtered_summary(filters)
         if isinstance(summary, dict):
-            return summary
-        assert isinstance(summary, AnalyticsSummary)
-        return summary.to_dict()
+            payload = summary
+        else:
+            assert isinstance(summary, AnalyticsSummary)
+            payload = summary.to_dict()
+        try:
+            from specialists.metrics import get_specialist_metrics
+
+            payload["specialist_analytics"] = get_specialist_metrics()
+        except Exception:
+            payload["specialist_analytics"] = {
+                "total_handoffs": 0,
+                "successful_handoffs": 0,
+                "failed_handoffs": 0,
+                "recovery_count": 0,
+                "average_routing_time_ms": 0.0,
+                "average_specialist_session_duration_ms": 0.0,
+            }
+        return payload

@@ -29,6 +29,8 @@ from knowledge.tools import KNOWLEDGE_TOOLS
 from memory.async_lookup import SessionMemoryLookup
 from memory.repository import initialize_database
 from memory.tools import MEMORY_TOOLS
+from specialists.handoff import HANDOFF_TOOLS
+from specialists.prompts import build_main_agent_resume_instructions
 from tools.livekit_tools import get_next_exercise, recommend_next_practice
 
 # Day 8: observe successful scoring for analytics without changing tools package logic.
@@ -43,6 +45,7 @@ AGENT_TOOLS = [
     *KNOWLEDGE_TOOLS,
     *LEARNING_TOOLS,
     *ESCALATION_TOOLS,
+    *HANDOFF_TOOLS,
 ]
 
 logger = logging.getLogger("agent")
@@ -231,6 +234,18 @@ When a learner requests practice on a specific topic, use the exercise lookup to
 If no exercise exists for that topic, continue with a suitable exercise for the learner's level.
 Never expose tool names or internal errors.
 
+MATH SPECIALIST HANDOFF
+You remain the primary conversational agent. The Math Practice Specialist is an extension, not a replacement.
+When the learner asks to solve or practice mathematics — arithmetic, addition, subtraction, multiplication, division, fractions, decimals, percentages, algebra, geometry, times tables, mental math, or word problems:
+1. Tell them you will connect them to the Math Practice Specialist. Do not switch silently.
+2. Then call handoff_to_math_specialist with the current math question, a short conversation summary, learner level, and language.
+Examples that should hand off: I need help solving 24 x 18. Can you teach fractions? Let's practice multiplication. Help me with percentages.
+If the request is ambiguous, such as I need help or my homework is difficult, ask: Are you looking for help with a math problem? Only hand off after the learner confirms.
+Do not hand off for greetings, science, English, general questions, memory, escalation, telephony, or analytics.
+If handoff fails, continue helping and say you are unable to connect them to the Math Specialist right now, but you will continue helping.
+When the learner returns from the Math Practice Specialist, continue naturally. Do not restart the conversation or repeat the first greeting.
+Never say tool names out loud.
+
 HUMAN HELP
 When the learner is clearly upset and asks for human assistance, or explicitly requests help from a teacher:
 1. Acknowledge the learner.
@@ -305,12 +320,13 @@ GREETING_INSTRUCTIONS = (
 
 
 class Assistant(Agent):
-    def __init__(self) -> None:
+    def __init__(self, *, resume_from_specialist: bool = False) -> None:
         # Day 4/5: memory + knowledge + learning tools via LiveKit function tools.
         super().__init__(instructions=SYSTEM_PROMPT, tools=AGENT_TOOLS)
         self._memory_user_id: str | None = None
         self._last_interaction_touched: bool = False
         self._memory_lookup = SessionMemoryLookup()
+        self._resume_from_specialist = resume_from_specialist
 
     def _resolve_user_id(self) -> str:
         """Resolve the current session learner id for memory tools."""
@@ -341,6 +357,31 @@ class Assistant(Agent):
         await self.update_instructions(
             f"{SYSTEM_PROMPT}\n\nCURRENT_USER_ID\n{user_id}\n"
         )
+
+        userdata = (
+            self.session.userdata if isinstance(self.session.userdata, dict) else {}
+        )
+        resume = (
+            self._resume_from_specialist
+            or userdata.get("resume_from_specialist") is True
+        )
+        if resume:
+            if isinstance(self.session.userdata, dict):
+                self.session.userdata["resume_from_specialist"] = False
+                self.session.userdata["active_agent"] = "main"
+            returned = userdata.get("specialist_context")
+            await self.session.generate_reply(
+                instructions=build_main_agent_resume_instructions(user_id, returned)
+            )
+            try:
+                from analytics.integration import mark_first_response_analytics
+
+                call_id = userdata.get("analytics_call_id")
+                if call_id:
+                    mark_first_response_analytics(str(call_id))
+            except Exception:
+                logger.info("Analytics integration unavailable")
+            return
 
         # Await only when greeting needs the result. Never invent memories.
         profile = await self._memory_lookup.get()

@@ -197,6 +197,12 @@ export function AnalyticsDashboard() {
             >
               Back to Tutor
             </Link>
+            <Link
+              href="/enterprise"
+              className="rounded-full border border-sky-200 bg-sky-50 px-4 py-2 text-sm font-medium text-sky-800 hover:bg-sky-100"
+            >
+              Control Center
+            </Link>
             <button
               type="button"
               onClick={() => void load(filters, { soft: true })}
@@ -322,6 +328,33 @@ export function AnalyticsDashboard() {
               <MetricCard label="Total Calls" value={metrics.total_calls} emphasize />
               <MetricCard label="Successful Calls" value={metrics.successful_calls} emphasize />
               <MetricCard label="Failed Calls" value={metrics.failed_calls} emphasize />
+            </section>
+
+            <section aria-label="Specialist Analytics" className="grid gap-4 sm:grid-cols-3">
+              <MetricCard
+                label="Total Handoffs"
+                value={metrics.specialist_analytics?.total_handoffs ?? 0}
+              />
+              <MetricCard
+                label="Successful Handoffs"
+                value={metrics.specialist_analytics?.successful_handoffs ?? 0}
+              />
+              <MetricCard
+                label="Failed Handoffs"
+                value={metrics.specialist_analytics?.failed_handoffs ?? 0}
+              />
+              <MetricCard
+                label="Recovery Count"
+                value={metrics.specialist_analytics?.recovery_count ?? 0}
+              />
+              <MetricCard
+                label="Average Routing Time"
+                value={`${metrics.specialist_analytics?.average_routing_time_ms ?? 0} ms`}
+              />
+              <MetricCard
+                label="Average Specialist Session Duration"
+                value={`${metrics.specialist_analytics?.average_specialist_session_duration_ms ?? 0} ms`}
+              />
             </section>
 
             <section aria-label="Success and failure rates" className="grid gap-4 sm:grid-cols-2">

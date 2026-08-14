@@ -40,6 +40,14 @@ export type AnalyticsSummary = {
     top_channel: string | null;
     summary_sentence: string;
   } | null;
+  specialist_analytics?: {
+    total_handoffs: number;
+    successful_handoffs: number;
+    failed_handoffs: number;
+    recovery_count: number;
+    average_routing_time_ms: number;
+    average_specialist_session_duration_ms: number;
+  };
   error?: boolean;
   message?: string;
 };
