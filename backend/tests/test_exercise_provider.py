@@ -191,7 +191,10 @@ def test_provider_malformed_exercise(monkeypatch: pytest.MonkeyPatch) -> None:
     )
     provider = ExerciseProvider("https://example.com/exercises")
     assert provider.fetch_exercise("beginner") is None
-    assert validate_exercise_payload({"topic": "Only topic"}, expected_level="beginner") is None
+    assert (
+        validate_exercise_payload({"topic": "Only topic"}, expected_level="beginner")
+        is None
+    )
 
 
 def test_provider_success_http(monkeypatch: pytest.MonkeyPatch) -> None:

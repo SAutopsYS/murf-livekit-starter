@@ -63,7 +63,9 @@ class RequestCache:
 
     def __init__(self, ttl_seconds: float | None = None) -> None:
         config = get_request_cache_config()
-        self._ttl_seconds = config.ttl_seconds if ttl_seconds is None else float(ttl_seconds)
+        self._ttl_seconds = (
+            config.ttl_seconds if ttl_seconds is None else float(ttl_seconds)
+        )
         self._entries: dict[str, _CacheEntry] = {}
 
     @property
@@ -110,7 +112,9 @@ class RequestCache:
     def clear_expired(self, *, now: float | None = None) -> None:
         """Remove expired entries."""
         current = time.monotonic() if now is None else now
-        expired = [key for key, entry in self._entries.items() if current >= entry.expires_at]
+        expired = [
+            key for key, entry in self._entries.items() if current >= entry.expires_at
+        ]
         for key in expired:
             self._entries.pop(key, None)
             logger.info("Cache expired")

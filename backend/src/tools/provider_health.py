@@ -59,7 +59,9 @@ class ProviderHealth:
     def __init__(self, cooldown_seconds: float | None = None) -> None:
         config = get_provider_health_config()
         self._cooldown_seconds = (
-            config.cooldown_seconds if cooldown_seconds is None else float(cooldown_seconds)
+            config.cooldown_seconds
+            if cooldown_seconds is None
+            else float(cooldown_seconds)
         )
         self._unavailable_until: float | None = None
         self._was_in_cooldown = False

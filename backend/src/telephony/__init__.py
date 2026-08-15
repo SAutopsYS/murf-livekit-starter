@@ -5,7 +5,7 @@ Independent of memory/, knowledge/, tools/, and agent.py wiring.
 
 from telephony.audit import CallAuditLogger, log_event, sanitize_metadata
 from telephony.bootstrap import ConversationBootstrap
-from telephony.caller import OutboundCallRequest, OutboundCaller, normalize_phone_number
+from telephony.caller import OutboundCaller, OutboundCallRequest, normalize_phone_number
 from telephony.config import (
     TelephonyConfig,
     clear_telephony_config_cache,

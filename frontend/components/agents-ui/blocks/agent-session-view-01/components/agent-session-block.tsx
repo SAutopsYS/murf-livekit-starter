@@ -116,7 +116,7 @@ export function AgentSessionView_01({
   supportsVideoInput = true,
   supportsScreenShare = true,
   isPreConnectBufferEnabled: _isPreConnectBufferEnabled,
-  audioVisualizerType: _audioVisualizerType,
+  audioVisualizerType = 'wave',
   audioVisualizerColor,
   audioVisualizerColorShift,
   audioVisualizerBarCount: _audioVisualizerBarCount,
@@ -162,6 +162,7 @@ export function AgentSessionView_01({
 
       <div className="absolute inset-x-0 top-16 z-20 sm:top-[4.5rem]">
         <VoiceStagePanel
+          audioVisualizerType={audioVisualizerType}
           audioVisualizerColor={audioVisualizerColor}
           audioVisualizerColorShift={audioVisualizerColorShift}
           audioVisualizerWaveLineWidth={audioVisualizerWaveLineWidth}

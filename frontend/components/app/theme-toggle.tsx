@@ -14,7 +14,7 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
   return (
     <div
       className={cn(
-        'text-foreground bg-background flex w-full flex-row justify-end divide-x overflow-hidden rounded-full border',
+        'text-foreground bg-background flex w-auto flex-row justify-end divide-x overflow-hidden rounded-full border',
         className
       )}
     >

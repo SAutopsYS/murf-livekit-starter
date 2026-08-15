@@ -249,9 +249,7 @@ class AnalyticsService:
                     and record.first_response_at >= record.started_at
                 ):
                     latencies.append(
-                        (
-                            record.first_response_at - record.started_at
-                        ).total_seconds()
+                        (record.first_response_at - record.started_at).total_seconds()
                         * 1000.0
                     )
             avg_duration = (

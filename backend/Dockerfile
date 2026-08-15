@@ -64,13 +64,20 @@ RUN adduser \
     --uid "${UID}" \
     appuser
 
+WORKDIR /app
+
 # Copy the application and virtual environment with correct ownership in a single layer
 # This avoids expensive recursive chown and excludes build tools from the final image
 COPY --from=build --chown=appuser:appuser /app /app
+RUN mkdir -p /app/data && chown appuser:appuser /app/data
 
 # Switch to the non-privileged user for all subsequent operations
 # This improves security by not running as root
 USER appuser
+
+# Liveness only. Readiness is `python -m salora_platform.health --ready`.
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD ["uv", "run", "python", "-m", "salora_platform.health"]
 
 # Run the AgentServer using UV
 # UV will activate the virtual environment and run the agent.

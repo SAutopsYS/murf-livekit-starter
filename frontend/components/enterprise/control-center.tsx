@@ -1,16 +1,27 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import Link from 'next/link';
-import { motion, useReducedMotion } from 'motion/react';
+import { OsPage, OsPageActions, OsPageContent, OsPageHeader, useOs } from '@/components/os';
+import {
+  EnterpriseLayout,
+  GlassCard,
+  MetricCard,
+  MetricSkeletonGrid,
+  PageState,
+  Rise,
+  TimelineCard,
+} from '@/components/system';
+import { Button } from '@/components/ui/button';
+import { NativeSelect } from '@/components/ui/input';
 import {
   ENTERPRISE_REFRESH_SECONDS,
+  type EnterpriseSnapshot,
   decideEnterpriseRoute,
   exportEnterprise,
   fetchEnterpriseSnapshot,
   searchEnterprise,
-  type EnterpriseSnapshot,
 } from '@/lib/enterprise';
+import type { OsCommand } from '@/lib/os-commands';
 
 type Role = 'admin' | 'teacher' | 'parent';
 type Section =
@@ -56,56 +67,16 @@ const SECTIONS: Array<{ id: Section; label: string; roles: Role[] }> = [
   { id: 'ops', label: 'Production', roles: ['admin'] },
 ];
 
-function GlassCard({
-  title,
-  children,
-  className = '',
-}: {
-  title?: string;
-  children: React.ReactNode;
-  className?: string;
-}) {
-  return (
-    <article
-      className={`rounded-2xl border border-white/40 bg-white/70 p-5 shadow-[0_8px_30px_rgb(15,23,42,0.06)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/50 ${className}`}
-    >
-      {title ? <h3 className="mb-3 text-sm font-semibold tracking-wide text-slate-500 uppercase">{title}</h3> : null}
-      {children}
-    </article>
-  );
-}
-
-function SkeletonGrid() {
-  return (
-    <div className="grid gap-4 sm:grid-cols-3" aria-busy="true" aria-label="Loading enterprise metrics">
-      {[0, 1, 2, 3, 4, 5].map((key) => (
-        <div
-          key={key}
-          className="h-28 animate-pulse rounded-2xl bg-gradient-to-r from-slate-200 via-slate-100 to-slate-200 dark:from-slate-800 dark:via-slate-700 dark:to-slate-800"
-        />
-      ))}
-    </div>
-  );
-}
-
 function Metric({ label, value }: { label: string; value: string | number | null | undefined }) {
-  return (
-    <GlassCard>
-      <p className="text-sm text-slate-500">{label}</p>
-      <p className="mt-2 text-3xl font-semibold tracking-tight text-slate-900 dark:text-white">{value ?? '—'}</p>
-    </GlassCard>
-  );
+  return <MetricCard label={label} value={value} />;
 }
 
 export function EnterpriseControlCenter() {
-  const reduceMotion = useReducedMotion();
+  const { setCommandOpen, registerCommands, setSearchHandler } = useOs();
   const [role, setRole] = useState<Role>('admin');
   const [section, setSection] = useState<Section>('overview');
   const [data, setData] = useState<EnterpriseSnapshot | null>(null);
   const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading');
-  const [paletteOpen, setPaletteOpen] = useState(false);
-  const [query, setQuery] = useState('');
-  const [searchHits, setSearchHits] = useState<Array<{ group: string; label: string }>>([]);
   const [notice, setNotice] = useState<string | null>(null);
   const [replayIndex, setReplayIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
@@ -132,27 +103,49 @@ export function EnterpriseControlCenter() {
   useEffect(() => {
     mounted.current = true;
     void load();
-    const timer = window.setInterval(() => {
-      if (document.visibilityState === 'hidden') return;
-      void load();
-    }, Math.max(5, ENTERPRISE_REFRESH_SECONDS) * 1000);
+    const timer = window.setInterval(
+      () => {
+        if (document.visibilityState === 'hidden') return;
+        void load();
+      },
+      Math.max(5, ENTERPRISE_REFRESH_SECONDS) * 1000
+    );
     return () => {
       mounted.current = false;
       window.clearInterval(timer);
     };
   }, [load]);
 
+  const visibleSections = useMemo(
+    () => SECTIONS.filter((item) => item.roles.includes(role)),
+    [role]
+  );
+
   useEffect(() => {
-    const onKey = (event: KeyboardEvent) => {
-      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
-        event.preventDefault();
-        setPaletteOpen((open) => !open);
-      }
-      if (event.key === 'Escape') setPaletteOpen(false);
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, []);
+    const commands: OsCommand[] = visibleSections.map((item) => ({
+      id: `enterprise:section:${item.id}`,
+      label: item.label,
+      hint: 'Control center',
+      kind: 'navigation',
+      keywords: `enterprise ${item.label} ${item.id}`,
+      run: () => setSection(item.id),
+    }));
+    return registerCommands(commands);
+  }, [visibleSections, registerCommands]);
+
+  useEffect(() => {
+    setSearchHandler(async (value) => {
+      const result = (await searchEnterprise(value)) as {
+        results?: Array<{ group: string; label: string }>;
+      };
+      return (result.results ?? []).map((hit) => ({
+        id: `search:${hit.group}:${hit.label}`,
+        label: `${hit.group}: ${hit.label}`,
+        kind: 'search' as const,
+      }));
+    });
+    return () => setSearchHandler(null);
+  }, [setSearchHandler]);
 
   useEffect(() => {
     if (!playing) return;
@@ -164,26 +157,11 @@ export function EnterpriseControlCenter() {
     return () => window.clearInterval(timer);
   }, [playing, data]);
 
-  const visibleSections = useMemo(
-    () => SECTIONS.filter((item) => item.roles.includes(role)),
-    [role]
-  );
-
   const timelineItems = useMemo(() => {
     const items = (data?.timeline?.items ?? []) as Array<Record<string, unknown>>;
     if (filterEvent === 'all') return items;
     return items.filter((item) => item.event === filterEvent);
   }, [data, filterEvent]);
-
-  const onSearch = async (value: string) => {
-    setQuery(value);
-    if (value.trim().length < 2) {
-      setSearchHits([]);
-      return;
-    }
-    const result = (await searchEnterprise(value)) as { results?: Array<{ group: string; label: string }> };
-    setSearchHits(result.results ?? []);
-  };
 
   const onExport = async (kind: string, format: 'json' | 'pdf') => {
     const payload = await exportEnterprise(kind, format);
@@ -217,391 +195,422 @@ export function EnterpriseControlCenter() {
   };
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(14,165,233,0.12),_transparent_36%),linear-gradient(180deg,#f8fafc,white)] px-4 pt-24 pb-16 dark:bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.12),_transparent_36%),linear-gradient(180deg,#0b1220,#0f172a)]">
-      <div className="mx-auto flex max-w-7xl flex-col gap-6">
-        <header className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <p className="text-xs font-semibold tracking-[0.16em] text-sky-600 uppercase">Enterprise Control Center</p>
-            <h1 className="mt-1 text-3xl font-semibold tracking-tight text-slate-900 dark:text-white">
-              Multi-Agent Learning Platform
-            </h1>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <Link className="rounded-full border border-slate-200 bg-white/80 px-3 py-1.5 text-sm dark:border-slate-700 dark:bg-slate-900" href="/">
-              Voice
-            </Link>
-            <Link className="rounded-full border border-slate-200 bg-white/80 px-3 py-1.5 text-sm dark:border-slate-700 dark:bg-slate-900" href="/analytics">
-              Analytics
-            </Link>
-            <label className="text-sm text-slate-500">
-              Role
-              <select
-                className="ml-2 rounded-lg border border-slate-200 bg-white px-2 py-1 dark:border-slate-700 dark:bg-slate-900"
-                value={role}
-                onChange={(event) => setRole(event.target.value as Role)}
-                aria-label="Role"
+    <EnterpriseLayout>
+      <OsPage>
+        <OsPageHeader
+          eyebrow="SALORA OS · Control Center"
+          title="Multi-Agent Learning Platform"
+          actions={
+            <OsPageActions>
+              <label className="text-muted-foreground flex items-center gap-2 text-sm">
+                Role
+                <NativeSelect
+                  className="h-8 w-auto"
+                  value={role}
+                  onChange={(event) => setRole(event.target.value as Role)}
+                  aria-label="Role"
+                >
+                  <option value="admin">Admin</option>
+                  <option value="teacher">Teacher</option>
+                  <option value="parent">Parent</option>
+                </NativeSelect>
+              </label>
+              <Button variant="hall" size="sm" onClick={() => void runMathRoute()}>
+                Route math sample
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => setCommandOpen(true)}>
+                Search ⌘K
+              </Button>
+            </OsPageActions>
+          }
+        />
+        <OsPageContent>
+          {notice ? (
+            <p
+              role="status"
+              className="bg-salora-success/15 rounded-[var(--salora-radius-cluster)] px-4 py-2 text-sm"
+            >
+              {notice}
+            </p>
+          ) : null}
+
+          <nav className="flex gap-2 overflow-x-auto pb-1" aria-label="Enterprise sections">
+            {visibleSections.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => setSection(item.id)}
+                className={`rounded-[var(--salora-radius-pill)] px-3 py-1.5 text-sm whitespace-nowrap transition-colors ${
+                  section === item.id
+                    ? 'bg-foreground text-background'
+                    : 'bg-card text-muted-foreground hover:bg-accent'
+                }`}
               >
-                <option value="admin">Admin</option>
-                <option value="teacher">Teacher</option>
-                <option value="parent">Parent</option>
-              </select>
-            </label>
-            <button
-              type="button"
-              className="rounded-full bg-sky-600 px-3 py-1.5 text-sm text-white"
-              onClick={() => void runMathRoute()}
-            >
-              Route math sample
-            </button>
-            <button
-              type="button"
-              className="rounded-full border border-slate-200 px-3 py-1.5 text-sm dark:border-slate-700"
-              onClick={() => setPaletteOpen(true)}
-            >
-              Search ⌘K
-            </button>
-          </div>
-        </header>
+                {item.label}
+              </button>
+            ))}
+          </nav>
 
-        {notice ? (
-          <p role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-800">
-            {notice}
-          </p>
-        ) : null}
+          {state === 'loading' && !data ? <MetricSkeletonGrid /> : null}
+          {state === 'error' && !data ? (
+            <PageState kind="error" title="Enterprise data is temporarily unavailable." />
+          ) : null}
 
-        <nav className="flex gap-2 overflow-x-auto pb-1" aria-label="Enterprise sections">
-          {visibleSections.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => setSection(item.id)}
-              className={`rounded-full px-3 py-1.5 text-sm whitespace-nowrap transition ${
-                section === item.id
-                  ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900'
-                  : 'bg-white/70 text-slate-600 dark:bg-slate-900/60 dark:text-slate-300'
-              }`}
-            >
-              {item.label}
-            </button>
-          ))}
-        </nav>
+          {data ? (
+            <Rise key={section} className="grid gap-4">
+              {section === 'overview' ? (
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                  <Metric label="Tutor" value={String(data.overview?.tutor ?? 'Healthy')} />
+                  <Metric
+                    label="Math Specialist"
+                    value={String(data.overview?.math_specialist ?? '—')}
+                  />
+                  <Metric label="Tool Calls" value={Number(data.overview?.tool_calls ?? 0)} />
+                  <Metric label="Notifications" value={(data.notifications ?? []).length} />
+                </div>
+              ) : null}
 
-        {state === 'loading' && !data ? <SkeletonGrid /> : null}
-        {state === 'error' && !data ? (
-          <p role="alert" className="rounded-2xl border border-rose-200 bg-rose-50 p-8 text-center text-rose-800">
-            Enterprise data is temporarily unavailable.
-          </p>
-        ) : null}
-
-        {data ? (
-          <motion.section
-            key={section}
-            initial={reduceMotion ? false : { opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="grid gap-4"
-          >
-            {section === 'overview' ? (
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <Metric label="Tutor" value={String(data.overview?.tutor ?? 'Healthy')} />
-                <Metric label="Math Specialist" value={String(data.overview?.math_specialist ?? '—')} />
-                <Metric label="Tool Calls" value={Number(data.overview?.tool_calls ?? 0)} />
-                <Metric label="Notifications" value={(data.notifications ?? []).length} />
-              </div>
-            ) : null}
-
-            {section === 'graph' ? (
-              <GlassCard title="Live Agent Graph">
-                <div className="flex flex-wrap items-center gap-3 overflow-x-auto py-4">
-                  {(data.graph?.nodes ?? []).map((node, index) => (
-                    <div key={node.id} className="flex items-center gap-3">
-                      <div className="rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm font-medium text-sky-900">
-                        {node.label}
+              {section === 'graph' ? (
+                <GlassCard title="Live Agent Graph">
+                  <div className="flex flex-wrap items-center gap-3 overflow-x-auto py-4">
+                    {(data.graph?.nodes ?? []).map((node, index) => (
+                      <div key={node.id} className="flex items-center gap-3">
+                        <div className="border-primary/20 bg-primary/10 text-foreground rounded-[var(--salora-radius-cluster)] border px-4 py-3 text-sm font-medium">
+                          {node.label}
+                        </div>
+                        {index < (data.graph?.nodes.length ?? 0) - 1 ? (
+                          <span aria-hidden>→</span>
+                        ) : null}
                       </div>
-                      {index < (data.graph?.nodes.length ?? 0) - 1 ? <span aria-hidden>→</span> : null}
+                    ))}
+                  </div>
+                </GlassCard>
+              ) : null}
+
+              {section === 'timeline' ? (
+                <GlassCard title="Live Agent Timeline">
+                  <label className="mb-3 block text-sm">
+                    Filter
+                    <NativeSelect
+                      className="ml-2 inline-flex h-8 w-auto"
+                      value={filterEvent}
+                      onChange={(event) => setFilterEvent(event.target.value)}
+                    >
+                      <option value="all">All</option>
+                      {timelineItems.map((item) => (
+                        <option key={String(item.id)} value={String(item.event)}>
+                          {String(item.event)}
+                        </option>
+                      ))}
+                    </NativeSelect>
+                  </label>
+                  <ol className="space-y-3">
+                    {timelineItems.map((item) => (
+                      <TimelineCard
+                        key={String(item.id)}
+                        timestamp={String(item.timestamp)}
+                        title={String(item.label)}
+                      />
+                    ))}
+                  </ol>
+                </GlassCard>
+              ) : null}
+
+              {section === 'decisions' ? (
+                <div className="grid gap-3">
+                  {(data.decisions?.decisions ?? []).map((decision) => (
+                    <GlassCard key={String(decision.id)} title={String(decision.selected_agent)}>
+                      <p>Intent: {String(decision.intent || '—')}</p>
+                      <p>Confidence: {Math.round(Number(decision.confidence || 0) * 100)}%</p>
+                      <p>Reason: {String(decision.reason)}</p>
+                      <p>Alternative: {String(decision.alternative)}</p>
+                      <p>
+                        Rejected:{' '}
+                        {Array.isArray(decision.rejected) ? decision.rejected.join(', ') : '—'}
+                      </p>
+                    </GlassCard>
+                  ))}
+                  {(data.decisions?.decisions ?? []).length === 0 ? (
+                    <p>No routing decisions yet.</p>
+                  ) : null}
+                </div>
+              ) : null}
+
+              {section === 'memory' ? (
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {(data.memory_graph?.nodes ?? []).map((node) => (
+                    <GlassCard key={String(node.id)} title={String(node.label)}>
+                      <p>{String(node.value)}</p>
+                    </GlassCard>
+                  ))}
+                </div>
+              ) : null}
+
+              {section === 'journey' ? (
+                <ol className="space-y-3">
+                  {(data.journey?.steps ?? []).map((step, index) => (
+                    <li
+                      key={`${step.day}-${index}`}
+                      className="border-border bg-card rounded-[var(--salora-radius-cluster)] border p-4"
+                    >
+                      <p className="text-muted-foreground text-xs">{String(step.day)}</p>
+                      <p className="text-lg font-semibold">{String(step.topic)}</p>
+                      <p>{String(step.status)}</p>
+                    </li>
+                  ))}
+                  {(data.journey?.steps ?? []).length === 0 ? (
+                    <p>No learning history yet.</p>
+                  ) : null}
+                  <p>Streak: {Number(data.journey?.streak ?? 0)}</p>
+                </ol>
+              ) : null}
+
+              {section === 'difficulty' ? (
+                <div className="grid gap-4 sm:grid-cols-3">
+                  <Metric
+                    label="Difficulty"
+                    value={String(data.difficulty?.difficulty ?? 'medium')}
+                  />
+                  <Metric label="Accuracy" value={String(data.difficulty?.accuracy ?? '—')} />
+                  <Metric label="Reason" value={String(data.difficulty?.reason ?? 'hold')} />
+                </div>
+              ) : null}
+
+              {section === 'heatmap' ? (
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                  {(data.heatmap?.cells ?? []).map((cell) => (
+                    <div
+                      key={String(cell.topic)}
+                      title={`Practice ${cell.practice_count}`}
+                      className="rounded-2xl p-4 text-white"
+                      style={{
+                        background: `rgba(14,165,233,${0.18 + Number(cell.intensity || 0) * 0.7})`,
+                      }}
+                    >
+                      <p className="font-semibold capitalize">{String(cell.topic)}</p>
+                      <p className="text-sm">{String(cell.practice_count)} sessions</p>
                     </div>
                   ))}
                 </div>
-              </GlassCard>
-            ) : null}
+              ) : null}
 
-            {section === 'timeline' ? (
-              <GlassCard title="Live Agent Timeline">
-                <label className="mb-3 block text-sm">
-                  Filter
-                  <select
-                    className="ml-2 rounded-lg border px-2 py-1"
-                    value={filterEvent}
-                    onChange={(event) => setFilterEvent(event.target.value)}
-                  >
-                    <option value="all">All</option>
-                    {timelineItems.map((item) => (
-                      <option key={String(item.id)} value={String(item.event)}>
-                        {String(item.event)}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <ol className="space-y-3">
-                  {timelineItems.map((item) => (
-                    <li key={String(item.id)} className="rounded-xl border border-slate-200/70 bg-white/60 p-3 dark:border-slate-700">
-                      <p className="text-xs text-slate-500">{String(item.timestamp)}</p>
-                      <p className="font-medium">{String(item.label)}</p>
-                    </li>
+              {section === 'performance' ? (
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                  <Metric
+                    label="Successful Handoffs"
+                    value={Number(data.performance?.successful_handoffs ?? 0)}
+                  />
+                  <Metric
+                    label="Failed Handoffs"
+                    value={Number(data.performance?.failed_handoffs ?? 0)}
+                  />
+                  <Metric
+                    label="Exercises Generated"
+                    value={Number(data.performance?.exercises_generated ?? 0)}
+                  />
+                  <Metric
+                    label="Recommendations"
+                    value={Number(data.performance?.learning_recommendations ?? 0)}
+                  />
+                </div>
+              ) : null}
+
+              {section === 'monitor' ? (
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {Object.entries(data.monitor?.components ?? {}).map(([name, row]) => (
+                    <GlassCard key={name} title={name.replaceAll('_', ' ')}>
+                      <p>{row.status}</p>
+                      <p className="text-muted-foreground text-sm">Latency {row.latency_ms} ms</p>
+                    </GlassCard>
                   ))}
-                </ol>
-              </GlassCard>
-            ) : null}
-
-            {section === 'decisions' ? (
-              <div className="grid gap-3">
-                {(data.decisions?.decisions ?? []).map((decision) => (
-                  <GlassCard key={String(decision.id)} title={String(decision.selected_agent)}>
-                    <p>Intent: {String(decision.intent || '—')}</p>
-                    <p>Confidence: {Math.round(Number(decision.confidence || 0) * 100)}%</p>
-                    <p>Reason: {String(decision.reason)}</p>
-                    <p>Alternative: {String(decision.alternative)}</p>
-                    <p>Rejected: {Array.isArray(decision.rejected) ? decision.rejected.join(', ') : '—'}</p>
-                  </GlassCard>
-                ))}
-                {(data.decisions?.decisions ?? []).length === 0 ? <p>No routing decisions yet.</p> : null}
-              </div>
-            ) : null}
-
-            {section === 'memory' ? (
-              <div className="grid gap-3 sm:grid-cols-2">
-                {(data.memory_graph?.nodes ?? []).map((node) => (
-                  <GlassCard key={String(node.id)} title={String(node.label)}>
-                    <p>{String(node.value)}</p>
-                  </GlassCard>
-                ))}
-              </div>
-            ) : null}
-
-            {section === 'journey' ? (
-              <ol className="space-y-3">
-                {(data.journey?.steps ?? []).map((step, index) => (
-                  <li key={`${step.day}-${index}`} className="rounded-2xl border bg-white/70 p-4 dark:bg-slate-900/50">
-                    <p className="text-xs text-slate-500">{String(step.day)}</p>
-                    <p className="text-lg font-semibold">{String(step.topic)}</p>
-                    <p>{String(step.status)}</p>
-                  </li>
-                ))}
-                {(data.journey?.steps ?? []).length === 0 ? <p>No learning history yet.</p> : null}
-                <p>Streak: {Number(data.journey?.streak ?? 0)}</p>
-              </ol>
-            ) : null}
-
-            {section === 'difficulty' ? (
-              <div className="grid gap-4 sm:grid-cols-3">
-                <Metric label="Difficulty" value={String(data.difficulty?.difficulty ?? 'medium')} />
-                <Metric label="Accuracy" value={String(data.difficulty?.accuracy ?? '—')} />
-                <Metric label="Reason" value={String(data.difficulty?.reason ?? 'hold')} />
-              </div>
-            ) : null}
-
-            {section === 'heatmap' ? (
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                {(data.heatmap?.cells ?? []).map((cell) => (
-                  <div
-                    key={String(cell.topic)}
-                    title={`Practice ${cell.practice_count}`}
-                    className="rounded-2xl p-4 text-white"
-                    style={{ background: `rgba(14,165,233,${0.18 + Number(cell.intensity || 0) * 0.7})` }}
-                  >
-                    <p className="font-semibold capitalize">{String(cell.topic)}</p>
-                    <p className="text-sm">{String(cell.practice_count)} sessions</p>
-                  </div>
-                ))}
-              </div>
-            ) : null}
-
-            {section === 'performance' ? (
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <Metric label="Successful Handoffs" value={Number(data.performance?.successful_handoffs ?? 0)} />
-                <Metric label="Failed Handoffs" value={Number(data.performance?.failed_handoffs ?? 0)} />
-                <Metric label="Exercises Generated" value={Number(data.performance?.exercises_generated ?? 0)} />
-                <Metric label="Recommendations" value={Number(data.performance?.learning_recommendations ?? 0)} />
-              </div>
-            ) : null}
-
-            {section === 'monitor' ? (
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {Object.entries(data.monitor?.components ?? {}).map(([name, row]) => (
-                  <GlassCard key={name} title={name.replaceAll('_', ' ')}>
-                    <p>{row.status}</p>
-                    <p className="text-sm text-slate-500">Latency {row.latency_ms} ms</p>
-                  </GlassCard>
-                ))}
-              </div>
-            ) : null}
-
-            {section === 'trace' ? (
-              <ol className="space-y-2">
-                {(data.trace?.nodes ?? []).map((node, index) => (
-                  <li key={`${node.event}-${index}`} className="rounded-xl border bg-white/70 p-3 dark:bg-slate-900/40">
-                    <p className="text-xs text-slate-500">{String(node.timestamp)}</p>
-                    <p>{String(node.label)}</p>
-                    <p className="text-sm">{String(node.service)} · {String(node.status)}</p>
-                  </li>
-                ))}
-              </ol>
-            ) : null}
-
-            {section === 'replay' ? (
-              <GlassCard title="Smart Session Replay">
-                <p className="mb-3 text-lg font-medium">
-                  {String((data.replay?.frames ?? [])[replayIndex]?.label || 'No frames yet')}
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  <button type="button" className="rounded-lg bg-slate-900 px-3 py-1 text-white" onClick={() => setPlaying(true)}>
-                    Play
-                  </button>
-                  <button type="button" className="rounded-lg border px-3 py-1" onClick={() => setPlaying(false)}>
-                    Pause
-                  </button>
-                  <button
-                    type="button"
-                    className="rounded-lg border px-3 py-1"
-                    onClick={() => setReplayIndex((index) => Math.max(0, index - 1))}
-                  >
-                    Previous
-                  </button>
-                  <button
-                    type="button"
-                    className="rounded-lg border px-3 py-1"
-                    onClick={() => setReplayIndex((index) => index + 1)}
-                  >
-                    Next
-                  </button>
-                  <button type="button" className="rounded-lg border px-3 py-1" onClick={() => setReplayIndex(0)}>
-                    Restart
-                  </button>
                 </div>
-              </GlassCard>
-            ) : null}
+              ) : null}
 
-            {section === 'voice' ? (
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <Metric label="Speaking (s)" value={Number(data.voice?.speaking_duration_seconds ?? 0)} />
-                <Metric label="Silence (s)" value={Number(data.voice?.silence_duration_seconds ?? 0)} />
-                <Metric label="Latency (ms)" value={Number(data.voice?.average_response_latency_ms ?? 0)} />
-                <Metric label="Speaking ratio" value={Number(data.voice?.speaking_ratio ?? 0)} />
-              </div>
-            ) : null}
-
-            {section === 'reports' ? (
-              <GlassCard title="Report Download Center">
-                <div className="flex flex-wrap gap-2">
-                  <button type="button" className="rounded-lg bg-sky-600 px-3 py-2 text-white" onClick={() => void onExport('report', 'json')}>
-                    JSON report
-                  </button>
-                  <button type="button" className="rounded-lg border px-3 py-2" onClick={() => void onExport('report', 'pdf')}>
-                    PDF report
-                  </button>
-                  <button type="button" className="rounded-lg border px-3 py-2" onClick={() => void onExport('teacher', 'json')}>
-                    Teacher JSON
-                  </button>
-                  <button type="button" className="rounded-lg border px-3 py-2" onClick={() => void onExport('health', 'pdf')}>
-                    Health PDF
-                  </button>
-                </div>
-              </GlassCard>
-            ) : null}
-
-            {section === 'parent' ? (
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <Metric label="Weekly practice" value={Number(data.parent?.weekly_practice ?? 0)} />
-                <Metric label="Streak" value={Number(data.parent?.learning_streak ?? 0)} />
-                <Metric label="Completion %" value={Number(data.parent?.completion_percent ?? 0)} />
-                <Metric label="Difficulty" value={String(data.parent?.difficulty ?? '—')} />
-              </div>
-            ) : null}
-
-            {section === 'gamification' ? (
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <Metric label="XP" value={Number(data.gamification?.xp ?? 0)} />
-                <Metric label="Level" value={String(data.gamification?.level ?? 'Beginner')} />
-                <Metric label="Coins" value={Number(data.gamification?.coins ?? 0)} />
-                <Metric label="Stars" value={Number(data.gamification?.stars ?? 0)} />
-              </div>
-            ) : null}
-
-            {section === 'teacher' ? (
-              <GlassCard title="Students">
-                <p className="mb-3 text-sm text-slate-500">{Number(data.teacher?.count ?? 0)} consenting learners</p>
-                <ul className="space-y-2">
-                  {((data.teacher?.students as Array<Record<string, unknown>>) ?? []).map((student) => (
-                    <li key={String(student.learner_ref)} className="rounded-xl border p-3">
-                      <p>Ref {String(student.learner_ref)}</p>
-                      <p className="text-sm text-slate-500">
-                        {String(student.grade || 'unset')} · {String(student.language || 'unset')}
+              {section === 'trace' ? (
+                <ol className="space-y-2">
+                  {(data.trace?.nodes ?? []).map((node, index) => (
+                    <li
+                      key={`${node.event}-${index}`}
+                      className="border-border bg-card rounded-[var(--salora-radius-cluster)] border p-3"
+                    >
+                      <p className="text-muted-foreground text-xs">{String(node.timestamp)}</p>
+                      <p>{String(node.label)}</p>
+                      <p className="text-sm">
+                        {String(node.service)} · {String(node.status)}
                       </p>
                     </li>
                   ))}
-                </ul>
-              </GlassCard>
-            ) : null}
+                </ol>
+              ) : null}
 
-            {section === 'language' ? (
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {(data.language?.languages ?? []).map((lang) => (
-                  <GlassCard key={String(lang.code)} title={String(lang.name)}>
-                    <p>Script: {String(lang.script)}</p>
-                    <p>Murf voice: {String(lang.voice)}</p>
-                  </GlassCard>
-                ))}
-              </div>
-            ) : null}
+              {section === 'replay' ? (
+                <GlassCard title="Smart Session Replay">
+                  <p className="mb-3 text-lg font-medium">
+                    {String((data.replay?.frames ?? [])[replayIndex]?.label || 'No frames yet')}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    <Button type="button" size="sm" onClick={() => setPlaying(true)}>
+                      Play
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setPlaying(false)}
+                    >
+                      Pause
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setReplayIndex((index) => Math.max(0, index - 1))}
+                    >
+                      Previous
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setReplayIndex((index) => index + 1)}
+                    >
+                      Next
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setReplayIndex(0)}
+                    >
+                      Restart
+                    </Button>
+                  </div>
+                </GlassCard>
+              ) : null}
 
-            {section === 'ops' ? (
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <Metric label="Health score" value={Number(data.ops?.health_score ?? 0)} />
-                <Metric label="Status" value={String(data.ops?.status ?? '—')} />
-                <Metric label="Sessions" value={Number(data.ops?.session_count ?? 0)} />
-                <Metric label="Retries" value={Number(data.ops?.retries ?? 0)} />
-              </div>
-            ) : null}
-          </motion.section>
-        ) : null}
+              {section === 'voice' ? (
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                  <Metric
+                    label="Speaking (s)"
+                    value={Number(data.voice?.speaking_duration_seconds ?? 0)}
+                  />
+                  <Metric
+                    label="Silence (s)"
+                    value={Number(data.voice?.silence_duration_seconds ?? 0)}
+                  />
+                  <Metric
+                    label="Latency (ms)"
+                    value={Number(data.voice?.average_response_latency_ms ?? 0)}
+                  />
+                  <Metric label="Speaking ratio" value={Number(data.voice?.speaking_ratio ?? 0)} />
+                </div>
+              ) : null}
 
-        {paletteOpen ? (
-          <div className="fixed inset-0 z-50 flex items-start justify-center bg-slate-950/40 p-6 backdrop-blur-sm" role="dialog" aria-label="Command palette">
-            <div className="w-full max-w-xl rounded-2xl border bg-white p-4 shadow-2xl dark:bg-slate-900">
-              <input
-                autoFocus
-                className="w-full rounded-xl border px-3 py-2"
-                placeholder="Search agents, topics, pages"
-                value={query}
-                onChange={(event) => void onSearch(event.target.value)}
-                aria-label="Global search"
-              />
-              <ul className="mt-3 max-h-64 overflow-auto">
-                {visibleSections
-                  .filter((item) => item.label.toLowerCase().includes(query.toLowerCase()))
-                  .map((item) => (
-                    <li key={item.id}>
-                      <button
-                        type="button"
-                        className="w-full rounded-lg px-3 py-2 text-left hover:bg-slate-100 dark:hover:bg-slate-800"
-                        onClick={() => {
-                          setSection(item.id);
-                          setPaletteOpen(false);
-                        }}
-                      >
-                        {item.label}
-                      </button>
-                    </li>
+              {section === 'reports' ? (
+                <GlassCard title="Report Download Center">
+                  <div className="flex flex-wrap gap-2">
+                    <Button type="button" size="sm" onClick={() => void onExport('report', 'json')}>
+                      JSON report
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => void onExport('report', 'pdf')}
+                    >
+                      PDF report
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => void onExport('teacher', 'json')}
+                    >
+                      Teacher JSON
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => void onExport('health', 'pdf')}
+                    >
+                      Health PDF
+                    </Button>
+                  </div>
+                </GlassCard>
+              ) : null}
+
+              {section === 'parent' ? (
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                  <Metric
+                    label="Weekly practice"
+                    value={Number(data.parent?.weekly_practice ?? 0)}
+                  />
+                  <Metric label="Streak" value={Number(data.parent?.learning_streak ?? 0)} />
+                  <Metric
+                    label="Completion %"
+                    value={Number(data.parent?.completion_percent ?? 0)}
+                  />
+                  <Metric label="Difficulty" value={String(data.parent?.difficulty ?? '—')} />
+                </div>
+              ) : null}
+
+              {section === 'gamification' ? (
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                  <Metric label="XP" value={Number(data.gamification?.xp ?? 0)} />
+                  <Metric label="Level" value={String(data.gamification?.level ?? 'Beginner')} />
+                  <Metric label="Coins" value={Number(data.gamification?.coins ?? 0)} />
+                  <Metric label="Stars" value={Number(data.gamification?.stars ?? 0)} />
+                </div>
+              ) : null}
+
+              {section === 'teacher' ? (
+                <GlassCard title="Students">
+                  <p className="text-muted-foreground mb-3 text-sm">
+                    {Number(data.teacher?.count ?? 0)} consenting learners
+                  </p>
+                  <ul className="space-y-2">
+                    {((data.teacher?.students as Array<Record<string, unknown>>) ?? []).map(
+                      (student) => (
+                        <li
+                          key={String(student.learner_ref)}
+                          className="border-border rounded-[var(--salora-radius-cluster)] border p-3"
+                        >
+                          <p>Ref {String(student.learner_ref)}</p>
+                          <p className="text-muted-foreground text-sm">
+                            {String(student.grade || 'unset')} ·{' '}
+                            {String(student.language || 'unset')}
+                          </p>
+                        </li>
+                      )
+                    )}
+                  </ul>
+                </GlassCard>
+              ) : null}
+
+              {section === 'language' ? (
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {(data.language?.languages ?? []).map((lang) => (
+                    <GlassCard key={String(lang.code)} title={String(lang.name)}>
+                      <p>Script: {String(lang.script)}</p>
+                      <p>Murf voice: {String(lang.voice)}</p>
+                    </GlassCard>
                   ))}
-                {searchHits.map((hit) => (
-                  <li key={`${hit.group}-${hit.label}`} className="px-3 py-2 text-sm text-slate-500">
-                    {hit.group}: {hit.label}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        ) : null}
-      </div>
-    </main>
+                </div>
+              ) : null}
+
+              {section === 'ops' ? (
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                  <Metric label="Health score" value={Number(data.ops?.health_score ?? 0)} />
+                  <Metric label="Status" value={String(data.ops?.status ?? '—')} />
+                  <Metric label="Sessions" value={Number(data.ops?.session_count ?? 0)} />
+                  <Metric label="Retries" value={Number(data.ops?.retries ?? 0)} />
+                </div>
+              ) : null}
+            </Rise>
+          ) : null}
+        </OsPageContent>
+      </OsPage>
+    </EnterpriseLayout>
   );
 }

@@ -360,7 +360,11 @@ class TelephonyService:
             self._metrics.increment("evaluations_completed")
             self._audit.log_event(
                 "evaluation_completed",
-                {"purpose": "daily_practice", "status": "scored", "provider": "livekit"},
+                {
+                    "purpose": "daily_practice",
+                    "status": "scored",
+                    "provider": "livekit",
+                },
             )
             if result.get("recommendation"):
                 self._metrics.increment("recommendations_generated")
@@ -455,7 +459,10 @@ def get_telephony_service(*, force_reload: bool = False) -> TelephonyService:
     global _default_service
     if _default_service is None or force_reload:
         if force_reload:
-            from telephony.config import clear_telephony_config_cache, get_telephony_config
+            from telephony.config import (
+                clear_telephony_config_cache,
+                get_telephony_config,
+            )
             from telephony.features import clear_telephony_feature_flags
             from telephony.metrics import reset_telephony_metrics
 

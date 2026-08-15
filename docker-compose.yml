@@ -1,0 +1,44 @@
+# SALORA OS local/staging compose. Reuses backend/Dockerfile and frontend/Dockerfile.
+# Voice still uses LiveKit Cloud (or a host livekit-server). This file does not replace LiveKit.
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./frontend/.env.local
+    environment:
+      SALORA_PROFILE: ${SALORA_PROFILE:-development}
+      AUTH_REQUIRED: ${AUTH_REQUIRED:-false}
+    stop_grace_period: 15s
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/health').then((r)=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+    env_file:
+      - ./backend/.env.local
+    environment:
+      SALORA_PROFILE: ${SALORA_PROFILE:-development}
+      AUTH_REQUIRED: ${AUTH_REQUIRED:-false}
+    volumes:
+      - salora-data:/app/data
+    stop_grace_period: 20s
+    healthcheck:
+      test: ["CMD", "uv", "run", "python", "-m", "salora_platform.health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+
+volumes:
+  salora-data:

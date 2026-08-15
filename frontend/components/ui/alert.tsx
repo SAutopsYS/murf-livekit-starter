@@ -10,6 +10,8 @@ const alertVariants = cva(
         default: 'bg-card text-card-foreground',
         destructive:
           'text-destructive bg-card [&>svg]:text-current *:data-[slot=alert-description]:text-destructive/90',
+        warning: 'bg-salora-warning/15 text-foreground border-transparent [&>svg]:text-current',
+        success: 'bg-salora-success/15 text-foreground border-transparent [&>svg]:text-current',
       },
     },
     defaultVariants: {

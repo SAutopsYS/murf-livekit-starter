@@ -1,0 +1,117 @@
+/* SALORA design tokens. Expand, do not replace. 8pt spatial kernel. */
+
+:root {
+  /* Brand */
+  --salora-pulse: #2f6f5e;
+  --salora-pulse-on: #f7f4ee;
+  --salora-canvas: #f7f4ee;
+  --salora-ink: #1a2e28;
+
+  /* Semantic */
+  --salora-success: oklch(0.52 0.11 155);
+  --salora-warning: oklch(0.7 0.12 75);
+  --salora-error: oklch(0.55 0.18 25);
+  --salora-info: oklch(0.5 0.06 220);
+
+  /* Surface / border */
+  --salora-surface-raised: oklch(0.995 0.004 95);
+  --salora-surface-sunken: oklch(0.96 0.01 95);
+  --salora-border-subtle: oklch(0.9 0.012 95);
+  --salora-border-strong: oklch(0.78 0.02 150);
+
+  /* Space (8pt) */
+  --salora-space: 8px;
+  --salora-space-1: 4px;
+  --salora-space-2: 8px;
+  --salora-space-3: 16px;
+  --salora-space-4: 24px;
+  --salora-space-5: 32px;
+  --salora-space-6: 48px;
+  --salora-space-7: 64px;
+
+  /* Radius */
+  --salora-radius-control: 0.75rem;
+  --salora-radius-cluster: 1rem;
+  --salora-radius-panel: 1.5rem;
+  --salora-radius-pill: 9999px;
+
+  /* Elevation / blur */
+  --salora-shadow-sm: 0 8px 24px -18px rgb(26 46 40 / 0.28);
+  --salora-shadow-md: 0 20px 60px -28px rgb(26 46 40 / 0.28);
+  --salora-shadow-lg: 0 28px 72px -32px rgb(26 46 40 / 0.36);
+  --salora-blur-panel: 24px;
+  --salora-opacity-panel: 0.62;
+
+  /* Motion */
+  --salora-ease-enter: cubic-bezier(0.22, 1, 0.36, 1);
+  --salora-ease-exit: cubic-bezier(0.4, 0, 1, 1);
+  --salora-ease-progress: linear;
+  --salora-duration-short: 180ms;
+  --salora-duration-medium: 320ms;
+  --salora-duration-consequence: 400ms;
+
+  /* Type scale */
+  --salora-text-meta: 0.6875rem;
+  --salora-text-body: 1rem;
+  --salora-text-primary: 1.125rem;
+  --salora-text-title: 2.25rem;
+
+  /* Breakpoints (documentation + container queries) */
+  --salora-bp-sm: 40rem;
+  --salora-bp-md: 48rem;
+  --salora-bp-lg: 64rem;
+  --salora-bp-xl: 80rem;
+
+  /* Z-index */
+  --salora-z-base: 0;
+  --salora-z-sticky: 20;
+  --salora-z-header: 50;
+  --salora-z-overlay: 60;
+  --salora-z-toast: 70;
+
+  /* OS shell chrome */
+  --salora-shell-top: 56px;
+  --salora-shell-dock: 64px;
+  --salora-touch: 44px;
+}
+
+.dark {
+  --salora-pulse: #6fbf9a;
+  --salora-pulse-on: #121410;
+  --salora-canvas: #121410;
+  --salora-ink: #f4f1ea;
+  --salora-success: oklch(0.72 0.1 155);
+  --salora-warning: oklch(0.8 0.12 80);
+  --salora-error: oklch(0.7 0.16 22);
+  --salora-info: oklch(0.72 0.06 220);
+  --salora-surface-raised: oklch(0.2 0.018 145);
+  --salora-surface-sunken: oklch(0.17 0.016 145);
+  --salora-border-subtle: oklch(1 0 0 / 10%);
+  --salora-border-strong: oklch(1 0 0 / 22%);
+  --salora-shadow-sm: 0 8px 24px -16px rgb(0 0 0 / 0.45);
+  --salora-shadow-md: 0 24px 64px -28px rgb(0 0 0 / 0.55);
+  --salora-shadow-lg: 0 32px 80px -28px rgb(0 0 0 / 0.65);
+  --salora-opacity-panel: 0.06;
+}
+
+@theme inline {
+  --color-salora-pulse: var(--salora-pulse);
+  --color-salora-pulse-on: var(--salora-pulse-on);
+  --color-salora-success: var(--salora-success);
+  --color-salora-warning: var(--salora-warning);
+  --color-salora-error: var(--salora-error);
+  --color-salora-info: var(--salora-info);
+  --color-salora-raised: var(--salora-surface-raised);
+  --color-salora-sunken: var(--salora-surface-sunken);
+  --shadow-salora-sm: var(--salora-shadow-sm);
+  --shadow-salora-md: var(--salora-shadow-md);
+  --shadow-salora-lg: var(--salora-shadow-lg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --salora-duration-short: 0ms;
+    --salora-duration-medium: 0ms;
+    --salora-duration-consequence: 0ms;
+  }
+}

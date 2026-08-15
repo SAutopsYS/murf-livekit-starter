@@ -1,27 +1,44 @@
 import { NextResponse } from 'next/server';
 import { runAnalyticsCli } from '@/lib/analytics-backend';
+import { platformRoute } from '@/lib/platform/http';
+import { validateQueryToken } from '@/lib/platform/security';
 
 export const revalidate = 0;
 
 export async function GET(req: Request) {
-  try {
-    const { searchParams } = new URL(req.url);
-    const payload = await runAnalyticsCli('summary', {
-      preset: searchParams.get('preset'),
-      start_date: searchParams.get('start_date'),
-      end_date: searchParams.get('end_date'),
-      channel: searchParams.get('channel'),
-      outcome: searchParams.get('outcome'),
-    });
+  return platformRoute(
+    req,
+    { permission: 'analytics.read', rateLimit: 'api', metric: 'analytics.summary' },
+    async () => {
+      const { searchParams } = new URL(req.url);
+      const preset = searchParams.get('preset');
+      const startDate = searchParams.get('start_date');
+      const endDate = searchParams.get('end_date');
+      const channel = searchParams.get('channel');
+      const outcome = searchParams.get('outcome');
 
-    if (payload.error) {
-      return NextResponse.json(payload, { status: 503 });
+      if (
+        !validateQueryToken(preset, 'preset') ||
+        !validateQueryToken(startDate, 'date') ||
+        !validateQueryToken(endDate, 'date') ||
+        !validateQueryToken(channel, 'token') ||
+        !validateQueryToken(outcome, 'token')
+      ) {
+        return NextResponse.json({ error: true, message: 'Invalid query.' }, { status: 400 });
+      }
+
+      const payload = await runAnalyticsCli('summary', {
+        preset,
+        start_date: startDate,
+        end_date: endDate,
+        channel,
+        outcome,
+      });
+
+      if (payload.error) {
+        return NextResponse.json(payload, { status: 503 });
+      }
+      return NextResponse.json(payload);
     }
-    return NextResponse.json(payload);
-  } catch {
-    return NextResponse.json(
-      { error: true, message: 'Analytics are temporarily unavailable.' },
-      { status: 503 }
-    );
-  }
+  );
 }

@@ -47,6 +47,7 @@ class AnalyticsRepository:
                 conn.commit()
             return True
         except Exception:
+            logger.exception("Failed to initialize analytics database")
             return False
 
     def create_call(self, record: CallAnalyticsRecord) -> CallAnalyticsRecord | None:

@@ -45,7 +45,7 @@ export interface AgentDisconnectButtonProps
  *
  * @example
  * ```tsx
- * <AgentDisconnectButton onClick={() => console.log('Disconnecting...')} />
+ * <AgentDisconnectButton />
  * ```
  */
 export function AgentDisconnectButton({

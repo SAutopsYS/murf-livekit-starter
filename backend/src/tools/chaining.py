@@ -6,7 +6,8 @@ These helpers encode shared fallback rules for tests and future reuse.
 
 from __future__ import annotations
 
-from typing import Any, Mapping
+from collections.abc import Mapping
+from typing import Any
 
 from tools.exercise_tool import VALID_LEVELS, normalize_level
 

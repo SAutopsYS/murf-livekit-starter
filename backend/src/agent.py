@@ -53,9 +53,12 @@ logger = logging.getLogger("agent")
 load_dotenv(".env.local")
 
 # Day 4: initialize SQLite memory schema on startup.
-initialize_database()
+# Voice stays first-class: a store failure must not block the pipeline.
+if not initialize_database():
+    logger.warning("Memory database init failed; voice continues without profile store")
 # Day 8: initialize analytics schema (separate analytics.db).
-get_analytics_repository().initialize()
+if not get_analytics_repository().initialize():
+    logger.warning("Analytics database init failed; voice continues without ops store")
 
 # Day 2+: extend labeled sections below. Keep greeting in on_enter only.
 SYSTEM_PROMPT = """
@@ -501,23 +504,7 @@ async def my_agent(ctx: JobContext):
         userdata={},
     )
 
-    # To use a realtime model instead of a voice pipeline, use the following session setup instead.
-    # (Note: This is for the OpenAI Realtime API. For other providers, see https://docs.livekit.io/agents/models/realtime/))
-    # 1. Install livekit-agents[openai]
-    # 2. Set OPENAI_API_KEY in .env.local
-    # 3. Add `from livekit.plugins import openai` to the top of this file
-    # 4. Use the following session setup instead of the version above
-    # session = AgentSession(
-    #     llm=openai.realtime.RealtimeModel(voice="marin")
-    # )
-
-    # # Add a virtual avatar to the session, if desired
-    # # For other providers, see https://docs.livekit.io/agents/models/avatar/
-    # avatar = hedra.AvatarSession(
-    #   avatar_id="...",  # See https://docs.livekit.io/agents/models/avatar/plugins/hedra
-    # )
-    # # Start the avatar and wait for it to join
-    # await avatar.start(session, room=ctx.room)
+    # One Voice Pipeline only. Do not enable a realtime-model session or a second TTS.
 
     # Day 8: start analytics for this browser/SIP room session (failure-isolated).
     analytics_call_id = ctx.room.name or f"room-{ctx.room.sid}"

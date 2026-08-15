@@ -77,7 +77,9 @@ def reset_tool_metrics() -> None:
     _default_metrics.reset()
 
 
-def track_tool_call(tool_name: str, fn: Callable[..., T], *args: Any, **kwargs: Any) -> T:
+def track_tool_call(
+    tool_name: str, fn: Callable[..., T], *args: Any, **kwargs: Any
+) -> T:
     """Execute fn while recording duration and success/failure metrics."""
     started = time.perf_counter()
     success = False
@@ -91,7 +93,7 @@ def track_tool_call(tool_name: str, fn: Callable[..., T], *args: Any, **kwargs: 
     finally:
         duration_ms = (time.perf_counter() - started) * 1000.0
         _default_metrics.record(tool_name, duration_ms, success=success)
-        rounded = int(round(duration_ms))
+        rounded = round(duration_ms)
         label = {
             "exercise_tool": "Exercise tool completed",
             "score_tool": "Score tool completed",

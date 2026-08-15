@@ -159,7 +159,9 @@ def test_scenario_speaking_evaluation() -> None:
             "id": "i1",
             "source": "local_dataset",
         },
-    ).evaluate_practice("learner_1", "A long enough spoken answer for evaluation today.")
+    ).evaluate_practice(
+        "learner_1", "A long enough spoken answer for evaluation today."
+    )
     assert result["score"] == 82
     assert result["recommendation"] == "advance_level"
     assert result["follow_up"]["title"] == "Booking a Hotel"

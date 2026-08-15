@@ -107,7 +107,9 @@ def _vocabulary_score(word_count: int, unique_words: int) -> float:
     return _clamp((diversity * 70.0) + (volume * 0.30))
 
 
-def _sentence_completion_score(answer: str, sentence_count: int, word_count: int) -> float:
+def _sentence_completion_score(
+    answer: str, sentence_count: int, word_count: int
+) -> float:
     if word_count <= 0:
         return 0.0
     ending_punct = 1.0 if answer.rstrip().endswith((".", "!", "?")) else 0.0
@@ -134,7 +136,7 @@ def compute_score(
     unique_words: int,
     sentence_count: int,
 ) -> int:
-    """Compute a deterministic 0–100 overall score from lightweight metrics."""
+    """Compute a deterministic 0-100 overall score from lightweight metrics."""
     word_part = _word_count_score(word_count, level)
     vocab_part = _vocabulary_score(word_count, unique_words)
     sentence_part = _sentence_completion_score(answer, sentence_count, word_count)
@@ -146,7 +148,7 @@ def compute_score(
         + (sentence_part * 0.20)
         + (punct_part * 0.15)
     )
-    return int(round(_clamp(overall)))
+    return round(_clamp(overall))
 
 
 def generate_feedback(

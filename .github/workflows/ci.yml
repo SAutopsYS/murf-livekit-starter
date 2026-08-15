@@ -1,0 +1,81 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: UV_GIT_LFS=1 uv sync --dev
+      - name: Ruff
+        run: uv run ruff check .
+      - name: Pytest (no live LLM judge)
+        run: uv run python -m pytest -q --ignore=tests/test_agent.py
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+      - name: Install
+        run: pnpm install --frozen-lockfile
+      - name: Typecheck
+        run: pnpm exec tsc --noEmit
+      - name: Lint
+        run: pnpm lint
+      - name: Unit tests
+        run: pnpm test
+      - name: Build
+        run: pnpm build
+        env:
+          SALORA_PROFILE: production
+
+  privacy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Forbid speech columns in stores
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          import sys
+          pattern = re.compile(
+              r"""['\"]?(utterance|transcript)['\"]?\s+(TEXT|text)|COLUMN\s+(utterance|transcript)""",
+              re.I,
+          )
+          roots = [Path("backend/src/analytics"), Path("backend/src/memory")]
+          failed = False
+          for root in roots:
+              if not root.exists():
+                  continue
+              for path in root.rglob("*.py"):
+                  if pattern.search(path.read_text(encoding="utf-8")):
+                      print(f"speech column in {path}")
+                      failed = True
+          sys.exit(1 if failed else 0)
+          PY

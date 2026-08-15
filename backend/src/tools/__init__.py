@@ -20,9 +20,11 @@ from tools.exercise_tool import (
     ExerciseResult,
     filter_items_by_topic,
     get_local_exercise,
-    get_next_exercise as lookup_next_exercise,
     normalize_level,
     normalize_topic,
+)
+from tools.exercise_tool import (
+    get_next_exercise as lookup_next_exercise,
 )
 from tools.livekit_tools import (
     LEARNING_TOOLS,
@@ -50,6 +52,8 @@ from tools.provider_health import (
 from tools.recommendation import (
     RecommendationError,
     RecommendationResult,
+)
+from tools.recommendation import (
     recommend_next_practice as build_recommendation,
 )
 from tools.registry import (
@@ -77,6 +81,8 @@ from tools.score_tool import (
     count_unique_words,
     count_words,
     generate_feedback,
+)
+from tools.score_tool import (
     score_spoken_answer as score_answer,
 )
 from tools.session_cache import (
@@ -89,10 +95,10 @@ from tools.validator import ExerciseValidator, get_exercise_validator
 TOOLS = LEARNING_TOOLS
 
 __all__ = [
-    "TOOLS",
-    "LEARNING_TOOLS",
     "EXERCISES_FILENAME",
+    "LEARNING_TOOLS",
     "LEVEL_FALLBACK_QUESTION",
+    "TOOLS",
     "ExerciseConfig",
     "ExerciseDataset",
     "ExerciseError",

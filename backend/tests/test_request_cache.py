@@ -51,7 +51,7 @@ def test_ttl_expiration_reloads_exercise() -> None:
     )
     key = RequestCache.make_key("beginner", "local")
     # Force expire.
-    request_cache._entries[key].expires_at = 0  # noqa: SLF001
+    request_cache._entries[key].expires_at = 0
     assert request_cache.get(key, now=1.0) is None
 
     second = get_next_exercise(

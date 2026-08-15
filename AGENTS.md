@@ -1,91 +1,91 @@
 # AGENTS.md
 
-This is a monorepo for a voice AI agent starter, powered by Murf Falcon TTS and LiveKit Agents.
+Monorepo for SALORA OS: a voice learning product on LiveKit Agents and Murf Falcon TTS.
+
+Public docs: [docs/README.md](docs/README.md). Do not add a second Voice Pipeline, SpecialistRouter, Search Platform, or Automation Platform.
 
 ## Repository structure
 
-```
-murf-livekit-starter/
-├── backend/          # Python voice agent (LiveKit Agents + Murf Falcon TTS)
-│   ├── src/agent.py  # Agent entrypoint: all pipeline config lives here
-│   └── tests/        # LLM-judged eval tests
-├── frontend/         # Next.js UI (LiveKit Agents UI components)
-│   ├── app/          # Pages and API routes
-│   ├── components/   # UI components (agents-ui, app, ui)
-│   └── app-config.ts # Branding and feature config
-├── start_app.sh      # Start all services (macOS/Linux)
-└── start_app.ps1     # Start all services (Windows)
+```text
+├── backend/                 # Python worker
+│   ├── src/agent.py         # Voice Pipeline
+│   └── tests/               # pytest (CI skips live LLM judge)
+├── frontend/                # Next.js hall + instruments
+│   ├── app/
+│   ├── components/
+│   └── app-config.ts
+├── docs/                    # Architecture, guides, archive
+├── start_app.sh
+└── start_app.ps1
 ```
 
 ## Backend
 
 ### Tech stack
-- **Python 3.10+** with **uv** package manager
-- **LiveKit Agents SDK** (`livekit-agents ~1.4`): voice AI agent framework
-- **Murf Falcon** (`livekit-murf`): text-to-speech
-- **Deepgram Nova-3**: speech-to-text
-- **Google Gemini**: LLM
-- **Silero VAD** + **LiveKit Turn Detector**: voice activity and turn detection
+
+- Python 3.10+ with uv
+- LiveKit Agents SDK (`livekit-agents ~1.4`)
+- Murf Falcon (`livekit-murf`)
+- Deepgram Nova-3
+- Google Gemini
+- Silero VAD + LiveKit turn detector
 
 ### Key file: `backend/src/agent.py`
-This is the single entrypoint. It contains:
-- `SYSTEM_PROMPT`: controls the agent's behavior (change this to change the use case)
-- `Assistant` class: extends `Agent`, where tools are added via `@function_tool`
-- `my_agent()`: sets up the voice pipeline (STT → LLM → TTS) and connects to LiveKit
-- `prewarm()`: pre-loads the Silero VAD model
+
+- `SYSTEM_PROMPT`: Learning Tutor behavior
+- `Assistant`: tools via `@function_tool`
+- `my_agent()`: STT → LLM → TTS and LiveKit connect
+- `prewarm()`: Silero VAD
 
 ### Running the backend
+
 ```bash
 cd backend
 uv sync
-uv run python src/agent.py download-files   # first time only
-uv run python src/agent.py dev              # development
-uv run python src/agent.py console          # terminal-only testing
+uv run python src/agent.py download-files
+uv run python src/agent.py dev
+uv run python src/agent.py console
 ```
 
 ### Environment variables
-Copy `backend/.env.example` to `backend/.env.local`. Required keys:
-- `LIVEKIT_URL`, `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET`
-- `MURF_API_KEY`
-- `DEEPGRAM_API_KEY`
-- `GOOGLE_API_KEY`
+
+Copy `backend/.env.example` to `backend/.env.local`. Required: `LIVEKIT_URL`, `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET`, `MURF_API_KEY`, `DEEPGRAM_API_KEY`, `GOOGLE_API_KEY`.
 
 ### Code style
-Uses **ruff** for linting and formatting:
+
 ```bash
 uv run ruff check .
 uv run ruff format .
 ```
-Config is in `pyproject.toml`: 88 char line length, double quotes, space indent.
+
+88 char line, double quotes, space indent.
 
 ### Testing
-Tests are in `backend/tests/test_agent.py`. They use LiveKit's testing framework with LLM-as-judge evaluation (not mocks). Run with:
+
 ```bash
-uv run pytest
+uv run python -m pytest -q --ignore=tests/test_agent.py
 ```
-Requires `LIVEKIT_URL`, `LIVEKIT_API_KEY`, and `LIVEKIT_API_SECRET` to be set.
 
-When modifying the system prompt or adding tools, write tests first. Use the existing tests as a pattern. They call `session.run(user_input=...)` and use `.judge()` to evaluate responses.
+`tests/test_agent.py` is LLM-as-judge and needs LiveKit. CI skips it. When changing the prompt or tools, add tests first.
 
-### Dependencies
-Managed via `uv` and defined in `pyproject.toml`. Always use `uv sync` and `uv run`. Never `pip install`.
+Always `uv sync` / `uv run`. Never `pip install`.
 
 ## Frontend
 
 ### Tech stack
-- **Next.js** (React, TypeScript)
-- **pnpm** package manager
-- **LiveKit Agents UI** (shadcn-based components)
-- **Tailwind CSS**
+
+Next.js, TypeScript, pnpm, LiveKit Agents UI, Tailwind.
 
 ### Key files
-- `frontend/app-config.ts`: branding, feature flags, accent colors, visualizer config
-- `frontend/app/page.tsx`: main page
-- `frontend/app/api/token/route.ts`: LiveKit token endpoint
-- `frontend/components/app/`: app-level logic (welcome view, view controller, theme)
-- `frontend/components/agents-ui/`: voice UI components (visualizers, controls, chat)
+
+- `frontend/app-config.ts` and `frontend/lib/brand.ts`
+- `frontend/app/page.tsx` (hall)
+- `frontend/app/api/token/route.ts`
+- `frontend/components/os/` (Workspace Shell)
+- `frontend/components/app/` (hall views)
 
 ### Running the frontend
+
 ```bash
 cd frontend
 pnpm install
@@ -93,37 +93,44 @@ pnpm dev
 ```
 
 ### Environment variables
-Copy `frontend/.env.example` to `frontend/.env.local`. Required:
-- `LIVEKIT_URL`, `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET`
-- `AGENT_NAME` (optional: set to `my-agent` for explicit dispatch)
+
+Copy `frontend/.env.example` to `frontend/.env.local`. Required: `LIVEKIT_URL`, `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET`. Optional: `AGENT_NAME=my-agent`.
 
 ### Linting
+
 ```bash
-pnpm lint         # ESLint
-pnpm format:check # Prettier
+pnpm lint
+pnpm exec tsc --noEmit
+pnpm test
 ```
 
 ## Common tasks
 
 ### Change what the agent does
-Edit `SYSTEM_PROMPT` in `backend/src/agent.py`. See `backend/README.md` for example prompts.
+
+Edit `SYSTEM_PROMPT` in `backend/src/agent.py`. Keep the Learning Tutor. Do not paste a second product prompt as a second pipeline.
 
 ### Change the voice
-Edit the `voice` argument in `murf.TTS(...)` in `backend/src/agent.py`. Browse voices at https://murf.ai/api/docs/voices-styles/voice-library.
 
-### Add a tool to the agent
-Add a method to the `Assistant` class in `backend/src/agent.py` with the `@function_tool` decorator. There's a commented example (weather lookup) in the file. Import `function_tool` and `RunContext` from `livekit.agents`.
+Edit `voice` in `murf.TTS(...)` in `agent.py`. Library: https://murf.ai/api/docs/voices-styles/voice-library
+
+### Add a tool
+
+Add a method on `Assistant` with `@function_tool`. Import `function_tool` and `RunContext` from `livekit.agents`.
 
 ### Switch the LLM
-Replace the `llm=google.LLM(...)` call in `agent.py`. For OpenAI: install `livekit-agents[openai]`, set `OPENAI_API_KEY`, import `openai` from `livekit.plugins`, and use `openai.LLM(...)`.
+
+Replace `llm=google.LLM(...)`. For OpenAI: `livekit-agents[openai]`, `OPENAI_API_KEY`, `openai.LLM(...)`. Same Voice Pipeline.
 
 ### Change frontend branding
-Edit `frontend/app-config.ts`: company name, page title, logo paths, accent colors, button text, visualizer type.
 
-## Documentation references
+`frontend/lib/brand.ts` and `frontend/app-config.ts` together. Tokens: `frontend/styles/tokens.css`.
 
-- Murf Falcon TTS: https://murf.ai/api/docs/text-to-speech/streaming
-- Murf Voice Library: https://murf.ai/api/docs/voices-styles/voice-library
-- LiveKit Agents SDK: https://docs.livekit.io/agents
-- LiveKit Agents UI: https://livekit.io/ui
-- Deepgram STT: https://developers.deepgram.com
+## Documentation
+
+- [docs/README.md](docs/README.md)
+- [docs/guides/installation.md](docs/guides/installation.md)
+- [docs/architecture/overview.md](docs/architecture/overview.md)
+- Murf Falcon: https://murf.ai/api/docs/text-to-speech/streaming
+- LiveKit Agents: https://docs.livekit.io/agents
+- Deepgram: https://developers.deepgram.com

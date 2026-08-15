@@ -2,69 +2,13 @@
 
 import { Track } from 'livekit-client';
 import { AnimatePresence, motion } from 'motion/react';
-import { useAgent, useTracks } from '@livekit/components-react';
+import { useTracks } from '@livekit/components-react';
 import { AudioVisualizer } from '@/components/agents-ui/blocks/agent-session-view-01/components/audio-visualizer';
+import { VoiceCore, VoiceFeedback, useVoice } from '@/components/voice';
 import { cn } from '@/lib/shadcn/utils';
 
-type StageCopy = {
-  title: string;
-  subtitle: string;
-  tone: 'listening' | 'thinking' | 'speaking' | 'ready' | 'ended';
-};
-
-function getStageCopy(agentState: string): StageCopy {
-  switch (agentState) {
-    case 'listening':
-      return {
-        title: '🎤 Listening',
-        subtitle: 'Speak naturally...',
-        tone: 'listening',
-      };
-    case 'thinking':
-      return {
-        title: '🧠 Thinking',
-        subtitle: 'Preparing a helpful response...',
-        tone: 'thinking',
-      };
-    case 'speaking':
-      return {
-        title: '✨ AI Tutor Speaking',
-        subtitle: 'Listen carefully.',
-        tone: 'speaking',
-      };
-    case 'failed':
-    case 'disconnected':
-      return {
-        title: 'Session Completed',
-        subtitle: 'Thanks for practicing today.',
-        tone: 'ended',
-      };
-    default:
-      return {
-        title: 'Ready to Practice',
-        subtitle: 'Start speaking whenever you are ready.',
-        tone: 'ready',
-      };
-  }
-}
-
-const TONE_CLASS: Record<StageCopy['tone'], string> = {
-  listening: 'text-sky-600 dark:text-sky-300',
-  thinking: 'text-amber-700 dark:text-amber-300',
-  speaking: 'text-cyan-700 dark:text-cyan-300',
-  ready: 'text-foreground/80',
-  ended: 'text-muted-foreground',
-};
-
-const ORB_CLASS: Record<StageCopy['tone'], string> = {
-  ready: 'bg-sky-400/50 shadow-[0_0_24px_rgba(14,165,233,0.35)]',
-  listening: 'bg-sky-400 shadow-[0_0_28px_rgba(14,165,233,0.55)]',
-  thinking: 'bg-amber-400 shadow-[0_0_24px_rgba(251,191,36,0.45)] animate-pulse',
-  speaking: 'bg-cyan-400 shadow-[0_0_32px_rgba(34,211,238,0.55)] animate-pulse scale-110',
-  ended: 'bg-slate-300/70 shadow-[0_0_16px_rgba(148,163,184,0.25)]',
-};
-
 interface VoiceStagePanelProps {
+  audioVisualizerType?: 'bar' | 'wave' | 'grid' | 'radial' | 'aura';
   audioVisualizerColor?: `#${string}`;
   audioVisualizerColorShift?: number;
   audioVisualizerWaveLineWidth?: number;
@@ -72,14 +16,14 @@ interface VoiceStagePanelProps {
 }
 
 export function VoiceStagePanel({
-  audioVisualizerColor = '#0EA5E9',
+  audioVisualizerType = 'wave',
+  audioVisualizerColor,
   audioVisualizerColorShift = 0.25,
   audioVisualizerWaveLineWidth = 4,
   className,
 }: VoiceStagePanelProps) {
-  const { state: agentState } = useAgent();
+  const { visual, phase } = useVoice();
   const [microphoneTrack] = useTracks([Track.Source.Microphone]);
-  const stage = getStageCopy(agentState);
 
   return (
     <div
@@ -90,54 +34,39 @@ export function VoiceStagePanel({
     >
       <AnimatePresence mode="wait">
         <motion.div
-          key={stage.title}
+          key={visual.label}
           initial={{ opacity: 0, y: 6, scale: 0.98 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -4, scale: 0.98 }}
           transition={{ duration: 0.22, ease: 'easeOut' }}
           className="mb-3.5 text-center"
         >
-          <p
-            className={cn(
-              'text-sm font-semibold tracking-wide sm:text-base',
-              TONE_CLASS[stage.tone],
-              stage.tone === 'thinking' && 'animate-pulse'
-            )}
-          >
-            {stage.title}
+          <p className="text-foreground text-sm font-semibold tracking-wide sm:text-base">
+            {visual.label}
           </p>
           <p className="text-muted-foreground mt-1 text-xs leading-relaxed sm:text-sm">
-            {stage.subtitle}
+            {visual.meaning}
           </p>
         </motion.div>
       </AnimatePresence>
 
-      <div
-        aria-hidden
+      <VoiceCore
         className={cn(
-          'mb-3.5 size-3 rounded-full transition-all duration-500 sm:size-3.5',
-          ORB_CLASS[stage.tone]
-        )}
-      />
-
-      <div
-        className={cn(
-          'relative flex h-[156px] w-full items-center justify-center overflow-hidden rounded-3xl border border-sky-200/45 bg-white/55 px-3 shadow-[0_18px_52px_-28px_rgba(14,165,233,0.42)] backdrop-blur-xl transition-all duration-300 sm:h-[188px] dark:border-sky-400/15 dark:bg-white/5',
-          stage.tone === 'thinking' && 'shadow-amber-500/15',
-          stage.tone === 'listening' && 'shadow-sky-500/25',
-          stage.tone === 'speaking' && 'shadow-cyan-500/25'
+          'shadow-salora-md relative flex h-[156px] w-full items-center justify-center rounded-3xl border border-white/45 bg-white/55 px-3 backdrop-blur-xl sm:h-[188px] dark:border-white/10 dark:bg-white/5'
         )}
       >
         <AudioVisualizer
           isChatOpen={false}
-          audioVisualizerType="wave"
+          audioVisualizerType={audioVisualizerType}
           audioVisualizerColor={audioVisualizerColor}
           audioVisualizerColorShift={audioVisualizerColorShift}
           audioVisualizerWaveLineWidth={audioVisualizerWaveLineWidth}
           listeningAudioTrack={microphoneTrack}
           className="size-[240px] sm:size-[280px]"
         />
-      </div>
+      </VoiceCore>
+      <VoiceFeedback className="mt-3 justify-center" />
+      <span className="sr-only">Voice phase {phase}</span>
     </div>
   );
 }

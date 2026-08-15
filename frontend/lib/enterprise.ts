@@ -1,7 +1,10 @@
 export type EnterpriseSnapshot = Record<string, unknown> & {
   overview?: Record<string, unknown>;
   agents?: Array<Record<string, unknown>>;
-  graph?: { nodes: Array<{ id: string; label: string; active: boolean }>; edges: Array<{ source: string; target: string }> };
+  graph?: {
+    nodes: Array<{ id: string; label: string; active: boolean }>;
+    edges: Array<{ source: string; target: string }>;
+  };
   timeline?: { items: Array<Record<string, unknown>>; count: number };
   decisions?: { decisions: Array<Record<string, unknown>>; count: number };
   memory_graph?: { nodes: Array<Record<string, unknown>> };
@@ -45,13 +48,19 @@ export async function decideEnterpriseRoute(text: string): Promise<Record<string
 }
 
 export async function searchEnterprise(query: string): Promise<Record<string, unknown>> {
-  const response = await fetch(`/api/enterprise?command=search&query=${encodeURIComponent(query)}`, {
-    cache: 'no-store',
-  });
+  const response = await fetch(
+    `/api/enterprise?command=search&query=${encodeURIComponent(query)}`,
+    {
+      cache: 'no-store',
+    }
+  );
   return (await response.json()) as Record<string, unknown>;
 }
 
-export async function exportEnterprise(kind: string, format: 'json' | 'pdf'): Promise<Record<string, unknown>> {
+export async function exportEnterprise(
+  kind: string,
+  format: 'json' | 'pdf'
+): Promise<Record<string, unknown>> {
   const response = await fetch(
     `/api/enterprise/export?kind=${encodeURIComponent(kind)}&format=${format}`,
     { cache: 'no-store' }

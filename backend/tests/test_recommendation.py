@@ -8,7 +8,11 @@ import pytest
 
 from agent import AGENT_TOOLS, SYSTEM_PROMPT
 from tools import LEARNING_TOOLS
-from tools.livekit_tools import get_next_exercise, recommend_next_practice, score_spoken_answer
+from tools.livekit_tools import (
+    get_next_exercise,
+    recommend_next_practice,
+    score_spoken_answer,
+)
 from tools.recommendation import recommend_next_practice as build_recommendation
 
 

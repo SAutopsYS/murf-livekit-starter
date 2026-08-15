@@ -1,9 +1,8 @@
 import { Public_Sans } from 'next/font/google';
 import localFont from 'next/font/local';
 import { headers } from 'next/headers';
-import Link from 'next/link';
 import { ThemeProvider } from '@/components/app/theme-provider';
-import { ThemeToggle } from '@/components/app/theme-toggle';
+import { OsShell } from '@/components/os';
 import { cn } from '@/lib/shadcn/utils';
 import { getAppConfig, getStyles } from '@/lib/utils';
 import '@/styles/globals.css';
@@ -72,44 +71,15 @@ export default async function RootLayout({ children }: RootLayoutProps) {
           enableSystem
           disableTransitionOnChange
         >
-          <header className="fixed top-0 left-0 z-50 hidden w-full flex-row items-center justify-between px-6 py-5 md:flex">
-            <Link
-              href="/"
-              className="group flex items-center gap-2.5 transition-opacity duration-300 hover:opacity-90"
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={logo}
-                alt={`${companyName} Logo`}
-                className="block size-7 transition-transform duration-300 group-hover:scale-105 dark:hidden"
-              />
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={logoDark ?? logo}
-                alt={`${companyName} Logo`}
-                className="hidden size-7 transition-transform duration-300 group-hover:scale-105 dark:block"
-              />
-              <span className="text-foreground text-sm font-semibold tracking-tight">
-                {companyName}
-              </span>
-            </Link>
-            <span className="text-muted-foreground font-mono text-[11px] font-bold tracking-[0.14em] uppercase">
-              Built with{' '}
-              <a
-                target="_blank"
-                rel="noopener noreferrer"
-                href="https://docs.livekit.io/agents"
-                className="text-foreground underline underline-offset-4 transition-colors hover:text-sky-600 dark:hover:text-sky-300"
-              >
-                LiveKit Agents
-              </a>
-            </span>
-          </header>
-
-          {children}
-          <div className="group fixed bottom-0 left-1/2 z-50 mb-2 -translate-x-1/2">
-            <ThemeToggle className="translate-y-20 transition-transform delay-150 duration-300 group-hover:translate-y-0" />
-          </div>
+          <OsShell
+            brand={{
+              companyName,
+              logo,
+              logoDark,
+            }}
+          >
+            {children}
+          </OsShell>
         </ThemeProvider>
       </body>
     </html>

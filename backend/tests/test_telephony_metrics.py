@@ -100,7 +100,7 @@ def test_call_duration_and_duplicate_end() -> None:
     metrics.record_call_end("c1")
     snap = metrics.snapshot()
     assert snap["average_call_duration_seconds"] >= 0.0
-    assert metrics._duration_samples == 1  # noqa: SLF001
+    assert metrics._duration_samples == 1
 
 
 def test_service_integration_updates_metrics(

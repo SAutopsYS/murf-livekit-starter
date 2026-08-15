@@ -80,10 +80,10 @@ export function getStyles(appConfig: AppConfig) {
 
   return [
     accent
-      ? `:root { --primary: ${accent}; --primary-hover: color-mix(in srgb, ${accent} 80%, #000); }`
+      ? `:root { --primary: ${accent}; --ring: ${accent}; --salora-pulse: ${accent}; --primary-hover: color-mix(in srgb, ${accent} 80%, #000); }`
       : '',
     accentDark
-      ? `.dark { --primary: ${accentDark}; --primary-hover: color-mix(in srgb, ${accentDark} 80%, #000); }`
+      ? `.dark { --primary: ${accentDark}; --ring: ${accentDark}; --salora-pulse: ${accentDark}; --primary-hover: color-mix(in srgb, ${accentDark} 80%, #000); }`
       : '',
   ]
     .filter(Boolean)

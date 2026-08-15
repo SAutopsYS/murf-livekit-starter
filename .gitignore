@@ -2,3 +2,9 @@
 .env.*
 !.env.example
 .DS_Store
+scripts/node_modules/
+docs/assets/.chrome-capture/
+docs/assets/.chrome-cdp/
+__pycache__/
+.pytest_cache/
+.ruff_cache/

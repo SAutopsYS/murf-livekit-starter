@@ -7,7 +7,7 @@ Never writes to SQLite or persistent memory.
 from __future__ import annotations
 
 import logging
-from typing import Iterable
+from collections.abc import Iterable
 
 logger = logging.getLogger("tools.session_cache")
 

@@ -42,9 +42,13 @@ class ToolManager:
         if name == "recommend_next_practice":
             score = params.get("score")
             level = params.get("level")
-            return isinstance(score, int) and not isinstance(score, bool) and isinstance(
-                level,
-                str,
+            return (
+                isinstance(score, int)
+                and not isinstance(score, bool)
+                and isinstance(
+                    level,
+                    str,
+                )
             )
         return False
 

@@ -37,7 +37,9 @@ def _read_exercise_config() -> ExerciseConfig:
     raw_source = os.getenv("EXERCISE_SOURCE", "local").strip().lower() or "local"
     source = raw_source if raw_source in {"local", "api"} else "local"
     api_url = os.getenv("EXERCISE_API_URL", "").strip()
-    raw_timeout = os.getenv("EXERCISE_API_TIMEOUT_SECONDS", str(DEFAULT_TIMEOUT_SECONDS))
+    raw_timeout = os.getenv(
+        "EXERCISE_API_TIMEOUT_SECONDS", str(DEFAULT_TIMEOUT_SECONDS)
+    )
     try:
         timeout_seconds = float(raw_timeout)
     except ValueError:

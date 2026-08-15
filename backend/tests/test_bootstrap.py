@@ -41,13 +41,17 @@ def test_intro_generated_with_purpose_and_stop() -> None:
 
 
 def test_english_unchanged() -> None:
-    intro = ConversationBootstrap().build_intro(None, "daily_practice", "en-IN")["intro"]
+    intro = ConversationBootstrap().build_intro(None, "daily_practice", "en-IN")[
+        "intro"
+    ]
     assert "Hello" in intro
     assert "नमस्ते" not in intro
 
 
 def test_hindi_uses_devanagari() -> None:
-    intro = ConversationBootstrap().build_intro(None, "daily_practice", "hi-IN")["intro"]
+    intro = ConversationBootstrap().build_intro(None, "daily_practice", "hi-IN")[
+        "intro"
+    ]
     assert "नमस्ते" in intro
     assert "VoiceForBharat Tutor" in intro
     assert "Namaste" not in intro

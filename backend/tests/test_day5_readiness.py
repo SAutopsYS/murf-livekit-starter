@@ -11,15 +11,17 @@ from tools.exercise_tool import get_next_exercise
 from tools.manager import get_tool_manager
 from tools.metrics import get_tool_metrics, reset_tool_metrics
 from tools.provider_health import ProviderHealth
+from tools.recommendation import recommend_next_practice
 from tools.registry import list_tools
 from tools.request_cache import RequestCache
 from tools.score_tool import score_spoken_answer
-from tools.recommendation import recommend_next_practice
 from tools.session_cache import SessionExerciseCache
 
 
 def test_learning_tools_registered_on_agent() -> None:
-    names = {getattr(tool, "name", getattr(tool, "__name__", "")) for tool in AGENT_TOOLS}
+    names = {
+        getattr(tool, "name", getattr(tool, "__name__", "")) for tool in AGENT_TOOLS
+    }
     assert "get_next_exercise" in names
     assert "score_spoken_answer" in names
     assert "recommend_next_practice" in names

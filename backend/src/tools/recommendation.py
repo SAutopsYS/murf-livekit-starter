@@ -106,7 +106,9 @@ def _recommend_next_practice_impl(
     return result
 
 
-def recommend_next_practice(score: int, level: str) -> RecommendationResult | RecommendationError:
+def recommend_next_practice(
+    score: int, level: str
+) -> RecommendationResult | RecommendationError:
     """Recommend the next practice difficulty from a spoken-answer score.
 
     Args:

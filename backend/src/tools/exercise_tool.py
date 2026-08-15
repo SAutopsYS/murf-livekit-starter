@@ -234,7 +234,9 @@ def _get_next_exercise_impl(
                 remote = active_provider.fetch_exercise(normalized)
                 if remote is not None:
                     if not str(remote.get("id", "")).strip():
-                        title_hint = str(remote.get("title", "exercise")).strip() or "exercise"
+                        title_hint = (
+                            str(remote.get("title", "exercise")).strip() or "exercise"
+                        )
                         remote = {
                             **remote,
                             "id": f"api:{normalized}:{title_hint}",

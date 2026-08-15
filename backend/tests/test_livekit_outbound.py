@@ -12,7 +12,9 @@ from telephony.service import TelephonyService
 
 
 class _FakeDialer:
-    def __init__(self, result: dict[str, Any] | None = None, *, fail: bool = False) -> None:
+    def __init__(
+        self, result: dict[str, Any] | None = None, *, fail: bool = False
+    ) -> None:
         self.fail = fail
         self.result = result or {
             "status": "calling",
@@ -104,7 +106,9 @@ def test_successful_outbound_request(monkeypatch: pytest.MonkeyPatch) -> None:
 
 def test_configuration_failure_handled(monkeypatch: pytest.MonkeyPatch) -> None:
     # Missing LiveKit credentials.
-    service = TelephonyService(get_telephony_config(force_reload=True), dialer=_FakeDialer())
+    service = TelephonyService(
+        get_telephony_config(force_reload=True), dialer=_FakeDialer()
+    )
     result = service.place_call("9876543210", purpose="daily_practice")
     assert result == {
         "error": True,

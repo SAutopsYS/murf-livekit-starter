@@ -1,7 +1,17 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import Link from 'next/link';
+import {
+  OsPage,
+  OsPageActions,
+  OsPageContent,
+  OsPageFooter,
+  OsPageHeader,
+  OsPageToolbar,
+} from '@/components/os';
+import { AnalyticsLayout, InsightCard, MetricCard, PageState } from '@/components/system';
+import { Button } from '@/components/ui/button';
+import { NativeSelect } from '@/components/ui/input';
 import {
   ANALYTICS_REFRESH_INTERVAL_SECONDS,
   type AnalyticsFilters,
@@ -19,28 +29,6 @@ const DEFAULT_FILTERS: AnalyticsFilters = {
   channel: 'all',
   outcome: 'all',
 };
-
-function MetricCard({
-  label,
-  value,
-  emphasize = false,
-}: {
-  label: string;
-  value: string | number;
-  emphasize?: boolean;
-}) {
-  return (
-    <article
-      className={`rounded-2xl border border-slate-200/80 bg-white/90 p-5 shadow-sm ${
-        emphasize ? 'ring-1 ring-sky-200' : ''
-      }`}
-      aria-label={`${label}: ${value}`}
-    >
-      <h3 className="text-sm font-medium text-slate-500">{label}</h3>
-      <p className="mt-2 text-3xl font-semibold tracking-tight text-slate-900">{value}</p>
-    </article>
-  );
-}
 
 function formatRelativeDay(iso: string | null): string {
   if (!iso) return 'Unknown';
@@ -178,56 +166,31 @@ export function AnalyticsDashboard() {
   const showZeroRates = completed === 0;
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-sky-50 via-white to-slate-50 text-slate-900">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-8 sm:px-6 lg:px-8">
-        <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="text-sm font-medium text-sky-700">VoiceForBharat · Day 8</p>
-            <h1 className="mt-1 text-3xl font-semibold tracking-tight sm:text-4xl">
-              Voice Agent Analytics
-            </h1>
-            <p className="mt-2 max-w-2xl text-sm text-slate-600">
-              Privacy-safe aggregate metrics from real Learning &amp; Literacy calls.
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <Link
-              href="/"
-              className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
-            >
-              Back to Tutor
-            </Link>
-            <Link
-              href="/enterprise"
-              className="rounded-full border border-sky-200 bg-sky-50 px-4 py-2 text-sm font-medium text-sky-800 hover:bg-sky-100"
-            >
-              Control Center
-            </Link>
-            <button
-              type="button"
-              onClick={() => void load(filters, { soft: true })}
-              className="rounded-full bg-sky-600 px-4 py-2 text-sm font-medium text-white hover:bg-sky-700"
-            >
-              Refresh
-            </button>
-            <button
-              type="button"
-              onClick={() => void onExport()}
-              className="rounded-full border border-sky-200 bg-sky-50 px-4 py-2 text-sm font-medium text-sky-800 hover:bg-sky-100"
-            >
-              Export Report
-            </button>
-          </div>
-        </header>
+    <AnalyticsLayout>
+      <OsPage>
+        <OsPageHeader
+          eyebrow="SALORA OS · Analytics"
+          title="Voice Agent Analytics"
+          description="Privacy-safe aggregate metrics from real Learning & Literacy calls."
+          actions={
+            <OsPageActions>
+              <Button variant="hall" size="sm" onClick={() => void load(filters, { soft: true })}>
+                Refresh
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => void onExport()}>
+                Export Report
+              </Button>
+            </OsPageActions>
+          }
+        />
 
-        <section
+        <OsPageToolbar
           aria-label="Analytics filters"
-          className="grid gap-3 rounded-2xl border border-slate-200 bg-white/80 p-4 sm:grid-cols-2 lg:grid-cols-5"
+          className="grid sm:grid-cols-2 lg:grid-cols-5"
         >
           <label className="flex flex-col gap-1 text-sm">
-            <span className="font-medium text-slate-600">Date</span>
-            <select
-              className="rounded-lg border border-slate-200 bg-white px-3 py-2"
+            <span className="text-muted-foreground font-medium">Date</span>
+            <NativeSelect
               value={draft.preset || 'all'}
               onChange={(event) => setDraft((prev) => ({ ...prev, preset: event.target.value }))}
             >
@@ -235,24 +198,22 @@ export function AnalyticsDashboard() {
               <option value="today">Today</option>
               <option value="last_7_days">Last 7 Days</option>
               <option value="last_30_days">Last 30 Days</option>
-            </select>
+            </NativeSelect>
           </label>
           <label className="flex flex-col gap-1 text-sm">
-            <span className="font-medium text-slate-600">Channel</span>
-            <select
-              className="rounded-lg border border-slate-200 bg-white px-3 py-2"
+            <span className="text-muted-foreground font-medium">Channel</span>
+            <NativeSelect
               value={draft.channel || 'all'}
               onChange={(event) => setDraft((prev) => ({ ...prev, channel: event.target.value }))}
             >
               <option value="all">All</option>
               <option value="browser">Browser</option>
               <option value="sip">SIP</option>
-            </select>
+            </NativeSelect>
           </label>
           <label className="flex flex-col gap-1 text-sm">
-            <span className="font-medium text-slate-600">Outcome</span>
-            <select
-              className="rounded-lg border border-slate-200 bg-white px-3 py-2"
+            <span className="text-muted-foreground font-medium">Outcome</span>
+            <NativeSelect
               value={draft.outcome || 'all'}
               onChange={(event) => setDraft((prev) => ({ ...prev, outcome: event.target.value }))}
             >
@@ -260,247 +221,214 @@ export function AnalyticsDashboard() {
               <option value="success">Successful</option>
               <option value="failed">Failed</option>
               <option value="incomplete">Incomplete</option>
-            </select>
+            </NativeSelect>
           </label>
           <div className="flex items-end gap-2 lg:col-span-2">
-            <button
-              type="button"
-              onClick={applyFilters}
-              className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white"
-            >
+            <Button type="button" onClick={applyFilters}>
               Apply
-            </button>
-            <button
-              type="button"
-              onClick={resetFilters}
-              className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700"
-            >
+            </Button>
+            <Button type="button" variant="outline" onClick={resetFilters}>
               Reset Filters
-            </button>
+            </Button>
           </div>
-        </section>
+        </OsPageToolbar>
 
-        <div
-          className="flex flex-wrap items-center gap-3 text-sm text-slate-500"
-          aria-live="polite"
-        >
-          {lastUpdated ? (
-            <span>
-              Last updated:{' '}
-              {lastUpdated.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
-            </span>
-          ) : (
-            <span>Updated just now</span>
-          )}
-          {refreshWarning ? <span className="text-amber-700">{refreshWarning}</span> : null}
-          {exportError ? <span className="text-rose-700">{exportError}</span> : null}
-        </div>
-
-        {state === 'loading' && !summary ? (
-          <p className="rounded-2xl border border-dashed border-slate-300 bg-white/70 p-8 text-center text-slate-600">
-            Loading analytics…
-          </p>
-        ) : null}
-
-        {state === 'error' ? (
-          <p
-            role="alert"
-            className="rounded-2xl border border-rose-200 bg-rose-50 p-8 text-center text-rose-800"
+        <OsPageContent>
+          <div
+            className="text-muted-foreground flex flex-wrap items-center gap-3 text-sm"
+            aria-live="polite"
           >
-            Analytics are temporarily unavailable.
-          </p>
-        ) : null}
+            {lastUpdated ? (
+              <span>
+                Last updated:{' '}
+                {lastUpdated.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
+              </span>
+            ) : (
+              <span>Updated just now</span>
+            )}
+            {refreshWarning ? <span className="text-salora-warning">{refreshWarning}</span> : null}
+            {exportError ? <span className="text-salora-error">{exportError}</span> : null}
+          </div>
 
-        {state !== 'error' ? (
-          <>
-            {state === 'empty' ? (
-              <p className="rounded-2xl border border-slate-200 bg-white/80 p-4 text-sm text-slate-600">
-                No calls recorded yet.
-              </p>
-            ) : null}
-            {state === 'ready' && metrics.total_calls === 0 ? (
-              <p className="rounded-2xl border border-slate-200 bg-white/80 p-4 text-sm text-slate-600">
-                No calls match these filters.
-              </p>
-            ) : null}
+          {state === 'loading' && !summary ? (
+            <PageState kind="loading" title="Loading analytics" />
+          ) : null}
 
-            <section aria-label="Core call metrics" className="grid gap-4 sm:grid-cols-3">
-              <MetricCard label="Total Calls" value={metrics.total_calls} emphasize />
-              <MetricCard label="Successful Calls" value={metrics.successful_calls} emphasize />
-              <MetricCard label="Failed Calls" value={metrics.failed_calls} emphasize />
-            </section>
+          {state === 'error' ? (
+            <PageState kind="error" title="Analytics are temporarily unavailable." />
+          ) : null}
 
-            <section aria-label="Specialist Analytics" className="grid gap-4 sm:grid-cols-3">
-              <MetricCard
-                label="Total Handoffs"
-                value={metrics.specialist_analytics?.total_handoffs ?? 0}
-              />
-              <MetricCard
-                label="Successful Handoffs"
-                value={metrics.specialist_analytics?.successful_handoffs ?? 0}
-              />
-              <MetricCard
-                label="Failed Handoffs"
-                value={metrics.specialist_analytics?.failed_handoffs ?? 0}
-              />
-              <MetricCard
-                label="Recovery Count"
-                value={metrics.specialist_analytics?.recovery_count ?? 0}
-              />
-              <MetricCard
-                label="Average Routing Time"
-                value={`${metrics.specialist_analytics?.average_routing_time_ms ?? 0} ms`}
-              />
-              <MetricCard
-                label="Average Specialist Session Duration"
-                value={`${metrics.specialist_analytics?.average_specialist_session_duration_ms ?? 0} ms`}
-              />
-            </section>
+          {state !== 'error' ? (
+            <>
+              {state === 'empty' ? <PageState kind="empty" title="No calls recorded yet." /> : null}
+              {state === 'ready' && metrics.total_calls === 0 ? (
+                <PageState kind="no-results" title="No calls match these filters." />
+              ) : null}
 
-            <section aria-label="Success and failure rates" className="grid gap-4 sm:grid-cols-2">
-              <MetricCard
-                label="Success Rate"
-                value={showZeroRates ? '0%' : `${metrics.success_rate}%`}
-              />
-              <MetricCard
-                label="Failure Rate"
-                value={showZeroRates ? '0%' : `${metrics.failure_rate}%`}
-              />
-            </section>
-            {showZeroRates ? (
-              <p className="text-sm text-slate-500">No completed calls yet.</p>
-            ) : null}
+              <section aria-label="Core call metrics" className="grid gap-4 sm:grid-cols-3">
+                <MetricCard label="Total Calls" value={metrics.total_calls} emphasize />
+                <MetricCard label="Successful Calls" value={metrics.successful_calls} emphasize />
+                <MetricCard label="Failed Calls" value={metrics.failed_calls} emphasize />
+              </section>
 
-            <section
-              aria-label="Failure analysis"
-              className="rounded-2xl border border-slate-200 bg-white/90 p-5"
-            >
-              <h2 className="text-lg font-semibold">Failure Analysis</h2>
-              {Object.keys(metrics.failure_categories).length === 0 ? (
-                <p className="mt-3 text-sm text-slate-500">No failure categories yet.</p>
-              ) : (
-                <ul className="mt-3 space-y-2">
-                  {Object.entries(metrics.failure_categories).map(([key, count]) => (
-                    <li
-                      key={key}
-                      className="flex items-center justify-between text-sm text-slate-700"
-                    >
-                      <span>{labelize(key)}</span>
-                      <span className="font-semibold">{count}</span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </section>
+              <section aria-label="Specialist Analytics" className="grid gap-4 sm:grid-cols-3">
+                <MetricCard
+                  label="Total Handoffs"
+                  value={metrics.specialist_analytics?.total_handoffs ?? 0}
+                />
+                <MetricCard
+                  label="Successful Handoffs"
+                  value={metrics.specialist_analytics?.successful_handoffs ?? 0}
+                />
+                <MetricCard
+                  label="Failed Handoffs"
+                  value={metrics.specialist_analytics?.failed_handoffs ?? 0}
+                />
+                <MetricCard
+                  label="Recovery Count"
+                  value={metrics.specialist_analytics?.recovery_count ?? 0}
+                />
+                <MetricCard
+                  label="Average Routing Time"
+                  value={`${metrics.specialist_analytics?.average_routing_time_ms ?? 0} ms`}
+                />
+                <MetricCard
+                  label="Average Specialist Session Duration"
+                  value={`${metrics.specialist_analytics?.average_specialist_session_duration_ms ?? 0} ms`}
+                />
+              </section>
 
-            <section
-              aria-label="Performance"
-              className="grid gap-4 rounded-2xl border border-slate-200 bg-white/90 p-5 sm:grid-cols-2"
-            >
-              <div>
-                <h2 className="text-lg font-semibold">Performance</h2>
-                <dl className="mt-4 space-y-3 text-sm">
-                  <div className="flex justify-between gap-4">
-                    <dt className="text-slate-500">Average Call Duration</dt>
-                    <dd className="font-semibold">
-                      {formatDuration(metrics.performance.average_call_duration_seconds)}
-                    </dd>
-                  </div>
-                  <div className="flex justify-between gap-4">
-                    <dt className="text-slate-500">Average First Response</dt>
-                    <dd className="font-semibold">
-                      {Math.round(metrics.performance.average_first_response_ms)} ms
-                    </dd>
-                  </div>
-                </dl>
-              </div>
-              <div>
-                <h2 className="text-lg font-semibold">Performance Insights</h2>
-                <p className="mt-3 text-sm text-slate-600">
-                  {metrics.insights?.summary_sentence ||
-                    'No completed calls are available for analysis.'}
-                </p>
-                <dl className="mt-4 space-y-2 text-sm">
-                  <div className="flex justify-between gap-4">
-                    <dt className="text-slate-500">Top Failure</dt>
-                    <dd className="font-medium">
-                      {labelize(metrics.insights?.top_failure_category)}
-                    </dd>
-                  </div>
-                  <div className="flex justify-between gap-4">
-                    <dt className="text-slate-500">Top Language</dt>
-                    <dd className="font-medium">{metrics.insights?.top_language || 'Unknown'}</dd>
-                  </div>
-                  <div className="flex justify-between gap-4">
-                    <dt className="text-slate-500">Top Channel</dt>
-                    <dd className="font-medium">{labelize(metrics.insights?.top_channel)}</dd>
-                  </div>
-                </dl>
-              </div>
-            </section>
+              <section aria-label="Success and failure rates" className="grid gap-4 sm:grid-cols-2">
+                <MetricCard
+                  label="Success Rate"
+                  value={showZeroRates ? '0%' : `${metrics.success_rate}%`}
+                />
+                <MetricCard
+                  label="Failure Rate"
+                  value={showZeroRates ? '0%' : `${metrics.failure_rate}%`}
+                />
+              </section>
+              {showZeroRates ? (
+                <p className="text-muted-foreground text-sm">No completed calls yet.</p>
+              ) : null}
 
-            <section className="grid gap-4 lg:grid-cols-2">
-              <div className="rounded-2xl border border-slate-200 bg-white/90 p-5">
-                <h2 className="text-lg font-semibold">Language Distribution</h2>
-                {Object.keys(metrics.language_breakdown).length === 0 ? (
-                  <p className="mt-3 text-sm text-slate-500">No language data available.</p>
+              <InsightCard title="Failure Analysis">
+                {Object.keys(metrics.failure_categories).length === 0 ? (
+                  <p className="text-muted-foreground text-sm">No failure categories yet.</p>
                 ) : (
-                  <ul className="mt-3 space-y-2 text-sm">
-                    {Object.entries(metrics.language_breakdown).map(([lang, count]) => (
-                      <li key={lang} className="flex justify-between">
-                        <span>{lang}</span>
+                  <ul className="space-y-2">
+                    {Object.entries(metrics.failure_categories).map(([key, count]) => (
+                      <li
+                        key={key}
+                        className="text-foreground flex items-center justify-between text-sm"
+                      >
+                        <span>{labelize(key)}</span>
                         <span className="font-semibold">{count}</span>
                       </li>
                     ))}
                   </ul>
                 )}
-              </div>
-              <div className="rounded-2xl border border-slate-200 bg-white/90 p-5">
-                <h2 className="text-lg font-semibold">Call Channels</h2>
-                {Object.keys(metrics.channel_breakdown).length === 0 ? (
-                  <p className="mt-3 text-sm text-slate-500">No channel data available.</p>
+              </InsightCard>
+
+              <section aria-label="Performance" className="grid gap-4 sm:grid-cols-2">
+                <InsightCard title="Performance">
+                  <dl className="space-y-3 text-sm">
+                    <div className="flex justify-between gap-4">
+                      <dt className="text-muted-foreground">Average Call Duration</dt>
+                      <dd className="font-semibold">
+                        {formatDuration(metrics.performance.average_call_duration_seconds)}
+                      </dd>
+                    </div>
+                    <div className="flex justify-between gap-4">
+                      <dt className="text-muted-foreground">Average First Response</dt>
+                      <dd className="font-semibold">
+                        {Math.round(metrics.performance.average_first_response_ms)} ms
+                      </dd>
+                    </div>
+                  </dl>
+                </InsightCard>
+                <InsightCard title="Performance Insights">
+                  <p className="text-muted-foreground text-sm">
+                    {metrics.insights?.summary_sentence ||
+                      'No completed calls are available for analysis.'}
+                  </p>
+                  <dl className="mt-4 space-y-2 text-sm">
+                    <div className="flex justify-between gap-4">
+                      <dt className="text-muted-foreground">Top Failure</dt>
+                      <dd className="font-medium">
+                        {labelize(metrics.insights?.top_failure_category)}
+                      </dd>
+                    </div>
+                    <div className="flex justify-between gap-4">
+                      <dt className="text-muted-foreground">Top Language</dt>
+                      <dd className="font-medium">{metrics.insights?.top_language || 'Unknown'}</dd>
+                    </div>
+                    <div className="flex justify-between gap-4">
+                      <dt className="text-muted-foreground">Top Channel</dt>
+                      <dd className="font-medium">{labelize(metrics.insights?.top_channel)}</dd>
+                    </div>
+                  </dl>
+                </InsightCard>
+              </section>
+
+              <section className="grid gap-4 lg:grid-cols-2">
+                <InsightCard title="Language Distribution">
+                  {Object.keys(metrics.language_breakdown).length === 0 ? (
+                    <p className="text-muted-foreground text-sm">No language data available.</p>
+                  ) : (
+                    <ul className="space-y-2 text-sm">
+                      {Object.entries(metrics.language_breakdown).map(([lang, count]) => (
+                        <li key={lang} className="flex justify-between">
+                          <span>{lang}</span>
+                          <span className="font-semibold">{count}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </InsightCard>
+                <InsightCard title="Call Channels">
+                  {Object.keys(metrics.channel_breakdown).length === 0 ? (
+                    <p className="text-muted-foreground text-sm">No channel data available.</p>
+                  ) : (
+                    <ul className="space-y-2 text-sm">
+                      {Object.entries(metrics.channel_breakdown).map(([channel, count]) => (
+                        <li key={channel} className="flex justify-between">
+                          <span>{labelize(channel)}</span>
+                          <span className="font-semibold">{count}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </InsightCard>
+              </section>
+
+              <InsightCard title="Recent Calls">
+                {state === 'loading' && !summary ? (
+                  <p className="text-muted-foreground text-sm">Loading recent calls…</p>
+                ) : metrics.recent_calls.length === 0 ? (
+                  <p className="text-muted-foreground text-sm">No calls recorded yet.</p>
                 ) : (
-                  <ul className="mt-3 space-y-2 text-sm">
-                    {Object.entries(metrics.channel_breakdown).map(([channel, count]) => (
-                      <li key={channel} className="flex justify-between">
-                        <span>{labelize(channel)}</span>
-                        <span className="font-semibold">{count}</span>
+                  <ul className="divide-border mt-1 divide-y">
+                    {metrics.recent_calls.map((call) => (
+                      <li
+                        key={call.call_id}
+                        className="flex flex-wrap items-center justify-between gap-2 py-3 text-sm"
+                      >
+                        <span className="text-foreground">
+                          {formatRelativeDay(call.started_at)} · {labelize(call.channel)} ·{' '}
+                          {formatDuration(call.duration_seconds)} · {formatOutcome(call.outcome)}
+                          {call.failure_type ? ` · ${labelize(call.failure_type)}` : ''}
+                        </span>
                       </li>
                     ))}
                   </ul>
                 )}
-              </div>
-            </section>
-
-            <section
-              aria-label="Recent calls"
-              className="rounded-2xl border border-slate-200 bg-white/90 p-5"
-            >
-              <h2 className="text-lg font-semibold">Recent Calls</h2>
-              {state === 'loading' && !summary ? (
-                <p className="mt-3 text-sm text-slate-500">Loading recent calls…</p>
-              ) : metrics.recent_calls.length === 0 ? (
-                <p className="mt-3 text-sm text-slate-500">No calls recorded yet.</p>
-              ) : (
-                <ul className="mt-4 divide-y divide-slate-100">
-                  {metrics.recent_calls.map((call) => (
-                    <li
-                      key={call.call_id}
-                      className="flex flex-wrap items-center justify-between gap-2 py-3 text-sm"
-                    >
-                      <span className="text-slate-700">
-                        {formatRelativeDay(call.started_at)} · {labelize(call.channel)} ·{' '}
-                        {formatDuration(call.duration_seconds)} · {formatOutcome(call.outcome)}
-                        {call.failure_type ? ` · ${labelize(call.failure_type)}` : ''}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </section>
-          </>
-        ) : null}
-      </div>
-    </main>
+              </InsightCard>
+            </>
+          ) : null}
+        </OsPageContent>
+        <OsPageFooter>Privacy-safe aggregates. No transcripts. No tape.</OsPageFooter>
+      </OsPage>
+    </AnalyticsLayout>
   );
 }

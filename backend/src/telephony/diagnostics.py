@@ -86,7 +86,9 @@ class TelephonyDiagnostics:
             DiagnosticResult(
                 component="service",
                 healthy=self._service_initialized,
-                message="Initialized" if self._service_initialized else "Not initialized",
+                message="Initialized"
+                if self._service_initialized
+                else "Not initialized",
             )
         )
 

@@ -73,5 +73,7 @@ def test_session_rotation_with_topic() -> None:
 
 @pytest.mark.asyncio
 async def test_livekit_topic_parameter() -> None:
-    result = await livekit_get_next_exercise(object(), level="beginner", topic="routine")
+    result = await livekit_get_next_exercise(
+        object(), level="beginner", topic="routine"
+    )
     assert result.get("error") is not True

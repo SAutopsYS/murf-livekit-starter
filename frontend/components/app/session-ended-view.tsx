@@ -22,19 +22,19 @@ export function SessionEndedView({
     >
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_oklch(0.93_0.05_230/_0.5),_transparent_55%),radial-gradient(ellipse_at_bottom_left,_oklch(0.95_0.03_180/_0.35),_transparent_45%)] dark:bg-[radial-gradient(ellipse_at_top,_oklch(0.28_0.05_230/_0.4),_transparent_55%),radial-gradient(ellipse_at_bottom_left,_oklch(0.22_0.04_190/_0.3),_transparent_45%)]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_oklch(0.92_0.04_165/_0.42),_transparent_55%),radial-gradient(ellipse_at_bottom_left,_oklch(0.95_0.02_95/_0.3),_transparent_45%)] dark:bg-[radial-gradient(ellipse_at_top,_oklch(0.28_0.04_165/_0.35),_transparent_55%),radial-gradient(ellipse_at_bottom_left,_oklch(0.22_0.03_145/_0.28),_transparent_45%)]"
       />
 
       <div className="animate-in fade-in zoom-in-95 slide-in-from-bottom-4 surface-panel relative z-10 w-full max-w-md p-8 text-center duration-500 sm:p-10">
         <p className="text-muted-foreground mb-3 font-mono text-[11px] font-bold tracking-[0.2em] uppercase">
-          Learning &amp; Literacy
+          SALORA OS
         </p>
         <h2 className="text-foreground text-3xl font-semibold tracking-tight sm:text-4xl">
-          Session Ended
+          Session ended
         </h2>
         <div
           aria-hidden
-          className="mx-auto mt-6 flex size-14 items-center justify-center rounded-full border border-sky-200/60 bg-sky-50 text-sky-600 dark:border-sky-400/20 dark:bg-sky-400/10 dark:text-sky-300"
+          className="border-primary/20 bg-primary/10 text-primary mx-auto mt-6 flex size-14 items-center justify-center rounded-full border"
         >
           <span className="text-xl">★</span>
         </div>

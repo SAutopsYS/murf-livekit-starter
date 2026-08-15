@@ -89,9 +89,7 @@ class ConversationBootstrap:
             else:
                 reason = f"your {_purpose_label_en(purpose)}"
             greeting = f"Hello{(' ' + name) if name else ''}!"
-            body = (
-                f"This is VoiceForBharat Tutor calling for {reason}. {_STOP_EN}"
-            )
+            body = f"This is VoiceForBharat Tutor calling for {reason}. {_STOP_EN}"
             intro = f"{greeting} {body}"
 
         logger.info("Bootstrap message created")

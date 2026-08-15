@@ -1,141 +1,63 @@
 # Frontend
-## Voice Agent UI
 
-The React/Next.js frontend for the Voice Agent Starter. Built with [LiveKit Agents UI](https://livekit.io/ui) components, it provides a polished interface for real-time voice conversations with your agent.
+SALORA OS web surface. Workspace Shell wraps the hall and instruments. The voice session stays on LiveKit.
 
-### Features
-
-- Real-time voice interaction with LiveKit Agents
-- Camera video streaming support
-- Screen sharing capabilities
-- Multiple audio visualizer styles (`bar`, `grid`, `radial`, `wave`, `aura`)
-- Light/dark theme switching with system preference detection
-- Customizable branding, colors, and UI text via configuration
+Public guides: [../docs/guides/installation.md](../docs/guides/installation.md).
 
 ## Setup
-
-### 1. Install dependencies
 
 ```bash
 cd frontend
 pnpm install
-```
-
-### 2. Configure environment
-
-```bash
 cp .env.example .env.local
 ```
 
-Fill in your LiveKit credentials (same project as the backend):
-
-```env
-LIVEKIT_URL=wss://your-project.livekit.cloud
-LIVEKIT_API_KEY=your_key
-LIVEKIT_API_SECRET=your_secret
-AGENT_NAME=my-agent
-```
-
-### 3. Run
+Required: `LIVEKIT_URL`, `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET`. Optional: `AGENT_NAME=my-agent`.
 
 ```bash
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). Make sure your backend agent is running too.
+Open http://localhost:3000. The worker must be running. Frontend and backend do not call each other for audio. Both join LiveKit.
 
-## Customization
+## Routes
 
-### Branding & UI (`app-config.ts`)
+| Path | Role |
+| --- | --- |
+| `/` | Hall. Voice only |
+| `/analytics` | Call analytics instrument |
+| `/enterprise` | Control Center |
+| `/api/token` | LiveKit token |
+| `/api/health` · `/api/ready` | Liveness / readiness |
 
-Edit [`app-config.ts`](app-config.ts) to change branding, features, and button text:
+Studio, Marketplace, Education, and mentors are libraries. They are not mounted on the hall.
 
-```ts
-export const APP_CONFIG_DEFAULTS: AppConfig = {
-  companyName: 'Murf AI',
-  pageTitle: 'Voice Agent Starter',
-  pageDescription: 'A voice agent powered by Murf Falcon, the fastest TTS API',
+## Brand
 
-  supportsChatInput: true,
-  supportsVideoInput: true,
-  supportsScreenShare: true,
+Tokens: `styles/tokens.css`. Name and pulse: `lib/brand.ts` and `app-config.ts` together.
 
-  logo: '/murf-logo.svg',
-  accent: '#6366F1',
-  logoDark: '/murf-logo-dark.svg',
-  accentDark: '#818cf8',
-  startButtonText: 'Start talking',
+Visualizer types in `app-config.ts`: `bar`, `grid`, `radial`, `wave`, `aura`.
 
-  agentName: process.env.AGENT_NAME ?? undefined,
-};
-```
-
-### Audio visualizers
-
-Set `audioVisualizerType` in [`app-config.ts`](app-config.ts):
-
-| Type | Description | Key options |
-|------|-------------|-------------|
-| `bar` (default) | Vertical bars | `audioVisualizerBarCount` |
-| `grid` | Dot grid | `audioVisualizerGridRowCount`, `audioVisualizerGridColumnCount` |
-| `radial` | Circular bars | `audioVisualizerRadialBarCount`, `audioVisualizerRadialRadius` |
-| `wave` | Oscilloscope wave | `audioVisualizerWaveLineWidth` |
-| `aura` | Shader-based glow | `audioVisualizerAuraColorShift` |
-
-Use `audioVisualizerColor` / `audioVisualizerColorDark` to set accent colors across all modes.
-
-### Editing components
-
-All UI components are local and fully editable:
-
-- **`components/agents-ui/`:** Core UI: media controls, audio visualizers, chat transcript, session provider
-- **`components/app/`:** App-level logic: view transitions, welcome screen, theming
-- **`components/ui/`:** Primitive shadcn/ui components (button, select, tooltip, etc.)
-
-To update Agents UI components to the latest version:
+## Test
 
 ```bash
-pnpm shadcn:install
+pnpm exec tsc --noEmit
+pnpm lint
+pnpm test
 ```
 
-## Project Structure
+## Layout
 
-```
+```text
 frontend/
-├── app/
-│   ├── page.tsx                # Main page
-│   ├── layout.tsx              # Root layout
-│   └── api/token/route.ts      # LiveKit token endpoint
-├── components/
-│   ├── agents-ui/              # Agents UI components (visualizers, controls, chat)
-│   ├── app/                    # App components (welcome view, theme, controller)
-│   ├── ai-elements/            # AI conversation elements
-│   └── ui/                     # Primitive shadcn/ui components
-├── hooks/                      # React hooks (audio visualizers, controls)
-├── lib/                        # Utilities
-├── public/                     # Static assets (logos, fonts)
-├── styles/                     # Global CSS
-├── app-config.ts               # Branding & feature configuration
-└── package.json                # Dependencies (pnpm)
+├── app/                 # Pages and API
+├── components/os/       # Workspace Shell
+├── components/app/      # Hall views
+├── components/agents-ui/
+├── lib/                 # Engines and platform
+├── styles/
+└── app-config.ts
 ```
-
-## Deployment
-
-### Vercel
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/murf-ai/murf-livekit-starter&root-directory=frontend&env=LIVEKIT_URL,LIVEKIT_API_KEY,LIVEKIT_API_SECRET&project-name=murf-voice-agent&repository-name=murf-voice-agent)
-
-Set these environment variables:
-- `LIVEKIT_URL`, `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET`
-- `AGENT_NAME` (optional: for explicit agent dispatch)
-
-The frontend and backend don't call each other directly. They both connect to LiveKit, which handles real-time audio transport. Use the same LiveKit project credentials on both.
-
-## Links
-
-- [LiveKit Agents UI](https://livekit.io/ui)
-- [LiveKit JavaScript SDK](https://github.com/livekit/client-sdk-js)
-- [LiveKit Docs](https://docs.livekit.io)
 
 ## License
 

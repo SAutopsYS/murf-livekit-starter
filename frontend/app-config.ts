@@ -33,25 +33,26 @@ export interface AppConfig {
 }
 
 export const APP_CONFIG_DEFAULTS: AppConfig = {
-  companyName: 'Learning & Literacy Tutor',
-  pageTitle: 'AI Voice Learning Tutor',
-  pageDescription: 'Practice Spoken English naturally. Talk in Hindi, English or Hinglish.',
+  companyName: 'SALORA AI',
+  pageTitle: 'SALORA OS',
+  pageDescription:
+    'Voice-first learning. Practice in Hindi, English, or Hinglish. Learning that stays on the line.',
 
   supportsChatInput: true,
   supportsVideoInput: true,
   supportsScreenShare: true,
   isPreConnectBufferEnabled: true,
 
-  logo: '/murf-logo.svg',
-  accent: '#0EA5E9',
-  logoDark: '/murf-logo-dark.svg',
-  accentDark: '#38BDF8',
-  startButtonText: 'Start Talking',
+  logo: '/salora-mark.svg',
+  accent: '#2F6F5E',
+  logoDark: '/salora-mark-dark.svg',
+  accentDark: '#6FBF9A',
+  startButtonText: 'Enter the hall',
 
   // Voice experience uses the existing LiveKit wave visualizer.
   audioVisualizerType: 'wave',
-  audioVisualizerColor: '#0EA5E9',
-  audioVisualizerColorDark: '#38BDF8',
+  audioVisualizerColor: '#2F6F5E',
+  audioVisualizerColorDark: '#6FBF9A',
   audioVisualizerColorShift: 0.28,
   audioVisualizerWaveLineWidth: 4,
 

@@ -34,9 +34,7 @@ class TelephonyConfig:
     def livekit_ready(self) -> bool:
         """Return True when required LiveKit credentials are present."""
         return bool(
-            self.livekit_url
-            and self.livekit_api_key
-            and self.livekit_api_secret
+            self.livekit_url and self.livekit_api_key and self.livekit_api_secret
         )
 
     @property
