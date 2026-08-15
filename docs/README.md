@@ -149,6 +149,7 @@ docs/
 | [Showcase](salora/SALORA_OS_SHOWCASE.md) | Evidence and checklist |
 | [Public release](salora/SALORA_OS_PUBLIC_RELEASE.md) | Final readiness |
 | [Evidence](salora/SALORA_OS_EVIDENCE.md) | Inventory and capture list |
+| [Technical blog](salora/SALORA_OS_TECHNICAL_BLOG.md) | Public Medium-ready article |
 | [VoiceForBharat blog](salora/DAY10_BLOG.md) | Official submission post |
 
 ## Constitutions and archive

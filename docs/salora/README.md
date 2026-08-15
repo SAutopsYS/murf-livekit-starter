@@ -43,6 +43,10 @@ Engineering archive: [../engineering/README.md](../engineering/README.md).
 | — | [Validation](SALORA_OS_VALIDATION.md) | Cleanup and quality pass |
 | — | [Engineering journey](SALORA_OS_ENGINEERING_JOURNEY.md) | Challenges and lessons |
 | — | [VoiceForBharat history](VOICEFORBHARAT.md) | Days 1–9 (official attribution) |
+| — | [Technical blog](SALORA_OS_TECHNICAL_BLOG.md) | Public Medium-ready article |
+| — | [LinkedIn post](SALORA_OS_LINKEDIN_POST.md) | Public share copy |
+| — | [Blog evidence](SALORA_OS_BLOG_EVIDENCE.md) | Section → file map |
+| — | [Blog research](SALORA_OS_BLOG_RESEARCH.md) | Claims kept vs dropped |
 | — | [VoiceForBharat blog](DAY10_BLOG.md) | Official submission post |
 | — | [VoiceForBharat LinkedIn](DAY10_LINKEDIN.md) | Official submission post |
 | — | [Public release audit](SALORA_OS_PUBLIC_RELEASE.md) | Final readiness |
